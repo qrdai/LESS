@@ -1,2 +1,12 @@
+# original requirements by mengzhou
 peft==0.7.1
 transformers==4.36.2
+
+# additional packages
+datasets
+traker[fast]==0.1.3
+pandas
+matplotlib
+gpustat
+tqdm
+wandb
