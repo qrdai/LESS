@@ -25,7 +25,7 @@ def verify_and_measure_time(args):
     inputs = tokenizer(args.input_text, return_tensors="pt").to(args.load_mode)
 
     with torch.no_grad():
-        outputs = model.generate(inputs.input_ids, max_length=50)
+        outputs = model.generate(inputs.input_ids, max_length=100)
     generated_text = tokenizer.decode(outputs[0], skip_special_tokens=False)
     end_time_2 = time.time()
 

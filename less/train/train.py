@@ -91,10 +91,12 @@ def main():
     if len(tokenizer) > embedding_size:
         model.resize_token_embeddings(len(tokenizer))
         # if you load lora model and resize the token embeddings, the requires_grad flag is set to True for embeddings
+        # i.e., if directly load a PEFT adapter model
         if isinstance(model, PeftModel):
             model.get_input_embeddings().weight.requires_grad = False
             model.get_output_embeddings().weight.requires_grad = False
 
+    # if first load a pretrained model and later add adapter to it
     if not isinstance(model, PeftModel) and model_args.lora:
         lora_config = LoraConfig(
             task_type=TaskType.CAUSAL_LM,
@@ -150,8 +152,10 @@ def main():
     # train_dataset = Dataset.from_dict({"input_ids": input_ids, "labels": input_ids, "attention_mask": attention_mask})
 
     if dist.is_initialized() and dist.get_rank() == 0:
+        logger.info(f"dist.is_initialized() and dist.get_rank() == 0")
         print(model)
     elif not dist.is_initialized():
+        logger.info(f"not dist.is_initialized()")
         print(model)
 
     trainer = Trainer(
