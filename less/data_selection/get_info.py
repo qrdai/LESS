@@ -18,6 +18,8 @@ from less.data_selection.get_training_dataset import get_training_dataset
 from less.data_selection.get_validation_dataset import (get_dataloader,
                                                         get_dataset)
 
+cache_dir = "/root/autodl-tmp/huggingface/transformers" # `cache_dir` arg for .from_pretrained()
+
 
 def load_model(model_name_or_path: str,
                torch_dtype: Any = torch.bfloat16) -> Any:
@@ -36,14 +38,26 @@ def load_model(model_name_or_path: str,
         model_name_or_path, "adapter_config.json"))
     if is_peft:
         # load this way to make sure that optimizer states match the model structure
-        config = LoraConfig.from_pretrained(model_name_or_path)
+        config = LoraConfig.from_pretrained(model_name_or_path, cache_dir=cache_dir)
         base_model = AutoModelForCausalLM.from_pretrained(
-            config.base_model_name_or_path, torch_dtype=torch_dtype, device_map="auto")
+            config.base_model_name_or_path, 
+            torch_dtype=torch_dtype, 
+            device_map="auto",
+            cache_dir=cache_dir
+        )
         model = PeftModel.from_pretrained(
-            base_model, model_name_or_path, device_map="auto")
+            base_model, 
+            model_name_or_path, 
+            device_map="auto",
+            cache_dir=cache_dir
+        )
     else:
         model = AutoModelForCausalLM.from_pretrained(
-            model_name_or_path, torch_dtype=torch_dtype, device_map="auto")
+            model_name_or_path, 
+            torch_dtype=torch_dtype, 
+            device_map="auto",
+            cache_dir=cache_dir
+        )
 
     for name, param in model.named_parameters():
         if 'lora' in name or 'Lora' in name:
@@ -95,7 +109,7 @@ parser.add_argument("--lora_target_modules", nargs='+', default=[
 args = parser.parse_args()
 assert args.task is not None or args.train_file is not None
 
-tokenizer = AutoTokenizer.from_pretrained(args.model_path)
+tokenizer = AutoTokenizer.from_pretrained(args.model_path, cache_dir=cache_dir)
 dtype = torch.float16 if args.torch_dtype == "float16" else torch.bfloat16
 model = load_model(args.model_path, dtype)
 
@@ -125,7 +139,8 @@ if isinstance(model, PeftModel):
 
 adam_optimizer_state = None
 if args.info_type == "grads" and args.gradient_type == "adam":
-    optimizer_path = os.path.join(args.model_path, "optimizer.bin")
+    # optimizer_path = os.path.join(args.model_path, "optimizer.bin") # original by mengzhou
+    optimizer_path = os.path.join(args.model_path, "optimizer.pt")  # ckpt name modified
     adam_optimizer_state = torch.load(
         optimizer_path, map_location="cpu")["state"]
 
@@ -141,7 +156,7 @@ if args.task is not None:
 else:
     assert args.train_file is not None
     dataset = get_training_dataset(
-        args.train_file, tokenizer, args.max_length, sample_percentage=1.0)
+        args.train_file, tokenizer, args.max_length, sample_percentage=1.0) # set `sample_percentage=1.0` to calculate grad features for the whole training set 
     columns = deepcopy(dataset.column_names)
     columns.remove("input_ids")
     columns.remove("labels")

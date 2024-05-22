@@ -5,6 +5,8 @@ import os
 import random
 import sys
 import time
+import subprocess
+import signal
 
 import datasets
 import torch
@@ -186,6 +188,38 @@ def main():
             training_args.output_dir, "pytorch_model_fsdp.bin")
         os.remove(pytorch_model_path) if os.path.exists(
             pytorch_model_path) else None
+
+    # Check and Kill active wandb-service processes, to avoid eternal upload
+    try:
+        initial_check = subprocess.check_output(['pgrep', '-u', 'root', '-f', '^wandb-service'])
+        print("wandb-service processes found, will check again in 60 seconds.")
+
+        time.sleep(60)  # Wait for 60 seconds
+
+        try:
+            processes = subprocess.check_output(['pgrep', '-u', 'root', '-f', '^wandb-service'])
+            pids = processes.decode('utf-8').strip().split()
+            for pid in pids:
+                # directly send SIGKILL
+                print(f"Killing process ID {pid}")
+                os.kill(int(pid), signal.SIGKILL)  # Ensure PID is an integer and use SIGKILL to force kill
+
+                # "Graceful Shutdown" by sending SIGTERM first and then SIGKILL
+                # pid = int(pid)
+                # print(f"Sending SIGTERM to process ID {pid}")
+                # os.kill(pid, signal.SIGTERM)
+                # # Wait and check if the process is still running, then force kill
+                # time.sleep(5)  # Wait for 5 seconds
+                # try:
+                #     subprocess.check_output(['ps', '-p', str(pid)])
+                #     print(f"Process {pid} did not terminate, sending SIGKILL.")
+                #     os.kill(pid, signal.SIGKILL)
+                # except subprocess.CalledProcessError:
+                #     print(f"Process {pid} has terminated.")
+        except subprocess.CalledProcessError:
+            print("No wandb-service processes found after waiting, or already terminated.")
+    except subprocess.CalledProcessError:
+        print("No initial wandb-service processes found, no need to wait.")
 
 
 if __name__ == "__main__":

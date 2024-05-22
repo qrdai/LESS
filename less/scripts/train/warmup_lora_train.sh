@@ -26,6 +26,8 @@ if [[ $model_path == "meta-llama/Llama-2-13b-hf" ]]; then
 fi
 
 training_args="$base_training_args \
+--fsdp 'full_shard auto_wrap' \
+--fsdp_config llama_finetune \
 --model_name_or_path $model_path \
 --output_dir $output_dir \
 --percentage $percentage \
