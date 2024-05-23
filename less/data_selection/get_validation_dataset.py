@@ -292,7 +292,7 @@ def get_mmlu_dataset(data_dir: str,
             dataset["input_ids"].append(full_input_ids)
             dataset["labels"].append(labels)
             dataset["attention_mask"].append(attention_mask)
-    dataset = Dataset.from_dict(dataset)
+    dataset = Dataset.from_dict(dataset)    # the validation dataset is constructed in alphabetical order
     return dataset
 
 

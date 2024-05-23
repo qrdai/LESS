@@ -78,12 +78,27 @@ for target_task_name in args.target_task_names:
             influence_score += args.checkpoint_weights[i] * \
                 calculate_influence_score(
                     training_info=training_info, validation_info=validation_info)
+
+        # get one row in the attribution matrix: 1 * M_subtasks
         influence_score = influence_score.reshape(
-            influence_score.shape[0], N_SUBTASKS[target_task_name], -1).mean(-1).max(-1)[0] # first take an average over all eval points inside each subtask; then pick the max influence score over all subtasks as the final influence
+            influence_score.shape[0], N_SUBTASKS[target_task_name], -1).mean(-1).mean(0, keepdim=True)
+        assert influence_score.shape == torch.Size([1, N_SUBTASKS[target_task_name]]), f"{influence_score}, {influence_score.shape}"
+
         output_dir = os.path.join(args.output_path, target_task_name)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         output_file = os.path.join(
-            args.output_path, target_task_name, f"{train_file_name}_influence_score.pt")
+            args.output_path, target_task_name, f"{train_file_name}_attribution_matrix.pt")
         torch.save(influence_score, output_file)
-        print("Saved influence score to {}".format(output_file))
+        print("Saved attribution matrix to {}".format(output_file))
+
+        # # get the column-max influence scores for training point selection
+        # influence_score = influence_score.reshape(
+        #     influence_score.shape[0], N_SUBTASKS[target_task_name], -1).mean(-1).max(-1)[0] # first take an average over all eval points inside each subtask; then pick the max influence score over all subtasks as the final influence
+        # output_dir = os.path.join(args.output_path, target_task_name)
+        # if not os.path.exists(output_dir):
+        #     os.makedirs(output_dir)
+        # output_file = os.path.join(
+        #     args.output_path, target_task_name, f"{train_file_name}_influence_score.pt")
+        # torch.save(influence_score, output_file)
+        # print("Saved influence score to {}".format(output_file))

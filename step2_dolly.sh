@@ -5,8 +5,7 @@ GRADIENT_TYPE="adam"
 DIMS="8192"
 
 
-# CKPT_list=("422" "845" "1268" "1688")
-CKPT_list=("422" "845" "1268")
+CKPT_list=("422" "845" "1268" "1688")
 for CKPT in "${CKPT_list[@]}"
 do
     MODEL_PATH=../out/TinyLlama-1.1B-p0.05-lora-seed3-fsdp/checkpoint-${CKPT}   # should be fsdp-trained ckpt

@@ -1,4 +1,4 @@
-# 1. obtain SGD gradient features of all validation data, for all model checkpoints
+# 3-1. obtain SGD gradient features of all validation data, for all model checkpoints
 TASK=mmlu
 DATA_DIR=../data
 DIMS="8192" # We use 8192 as our default projection dimension
@@ -14,7 +14,7 @@ done
 
 
 
-# 2. calculate the influence score for all training data points
+# 3-2. calculate the influence score for all training data points
 # Note that: the final influence score for selection is the maximum value across all validation subtasks
 # TODO: need extra operations to recover the influence score for EACH subtask
 TRAIN_FILE_NAMES="dolly"    # training point gradients calculated in step2
@@ -32,7 +32,7 @@ SELECTED_DATA_OUTPUT_PATH="../selected_data"
 
 
 
-# 3. select the top-k training data points with the highest influence scores
+# 3-3. select the top-k training data points with the highest influence scores
 python3 -m less.data_selection.write_selected_data \
 --target_task_names ${TARGET_TASK_NAMES} \
 --train_file_names ${TRAIN_FILE_NAMES} \
