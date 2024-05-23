@@ -139,8 +139,8 @@ if isinstance(model, PeftModel):
 
 adam_optimizer_state = None
 if args.info_type == "grads" and args.gradient_type == "adam":
-    # optimizer_path = os.path.join(args.model_path, "optimizer.bin") # original by mengzhou
-    optimizer_path = os.path.join(args.model_path, "optimizer.pt")  # ckpt name modified
+    optimizer_path = os.path.join(args.model_path, "optimizer.bin") # original by mengzhou
+    # optimizer_path = os.path.join(args.model_path, "optimizer.pt")  # ckpt name modified
     adam_optimizer_state = torch.load(
         optimizer_path, map_location="cpu")["state"]
 
@@ -163,6 +163,9 @@ else:
     columns.remove("attention_mask")
     dataset = dataset.remove_columns(columns)
     dataloader = get_dataloader(dataset, tokenizer=tokenizer)
+
+if args.max_samples is None:
+    args.max_samples = len(dataset)
 
 if args.info_type == "reps":
     collect_reps(dataloader, model, args.output_path,

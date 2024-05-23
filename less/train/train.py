@@ -183,6 +183,7 @@ def main():
     trainer.save_state()
 
     # remove the full model in the end to save space, only adapter is needed
+    # TODO: "pytorch_model_fsdp.bin" stills exists in the subdirectories for each ckpt, e.g., training_args.output_dir/checkpoint-422
     if isinstance(model, PeftModel):
         pytorch_model_path = os.path.join(
             training_args.output_dir, "pytorch_model_fsdp.bin")
