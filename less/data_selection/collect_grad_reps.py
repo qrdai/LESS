@@ -201,7 +201,7 @@ def collect_grads(dataloader,
     # fmodel, params, buffers = make_functional_with_buffers(model)
     # grads_loss = torch.func.grad(get_output, has_aux=False, argnums=1)
 
-    # initialize a project for each target projector dimension
+    # initialize a projector for each target project dimension
     projectors = []
     for dim in proj_dim:
         proj = projector(grad_dim=number_of_params,
@@ -266,6 +266,7 @@ def collect_grads(dataloader,
         if max_samples is not None and count == max_samples:
             break
 
+    # project and save the final checkpoint
     if len(full_grads) > 0:
         _project(full_grads, projected_grads)
         full_grads = []
@@ -286,7 +287,7 @@ def merge_and_normalize_info(output_dir: str, prefix="reps"):
     """ Merge and normalize the representations and gradients into a single file. """
     info = os.listdir(output_dir)
     info = [file for file in info if file.startswith(prefix)]
-    # Sort the files in ascending order, to make sure in matching.py, `influence_score.reshape(influence_score.shape[0], N_SUBTASKS[target_task_name], -1)` correctly expands the third dimension of samples from the same subtask
+    # Sort the files in ascending order, in order to make sure that in matching.py `influence_score.reshape(influence_score.shape[0], N_SUBTASKS[target_task_name], -1)` correctly expands the third dimension of samples from the same subtask
     info.sort(key=lambda x: int(x.split(".")[0].split("-")[1]))
     merged_data = []
     for file in info:

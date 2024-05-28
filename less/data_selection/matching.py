@@ -80,6 +80,7 @@ for target_task_name in args.target_task_names:
                     training_info=training_info, validation_info=validation_info)
 
         # get one row in the attribution matrix: 1 * M_subtasks
+        print(f"Influence Score shape for {train_file_name} * {target_task_name}: {influence_score.shape}")
         influence_score = influence_score.reshape(
             influence_score.shape[0], N_SUBTASKS[target_task_name], -1).mean(-1).mean(0, keepdim=True)
         assert influence_score.shape == torch.Size([1, N_SUBTASKS[target_task_name]]), f"{influence_score}, {influence_score.shape}"
