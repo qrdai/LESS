@@ -1,10 +1,13 @@
 #!/bin/bash
 
 ID=$RANDOM
+# PORT=$((29000 + ID % 1000))  # This generates a port number between 29000 and 29999
 export header="torchrun --nproc_per_node 1 --nnodes 1 \
+--rdzv-endpoint=localhost:29400 \
 --rdzv-id=$ID --rdzv_backend c10d \
 -m less.train.train"
 
+# delete --percentage since it's set in `warmup_lora_train.sh`
 export base_training_args="--do_train True \
 --max_seq_length 2048 \
 --use_fast_tokenizer True \
@@ -22,7 +25,6 @@ export base_training_args="--do_train True \
 --report_to wandb \
 --optim adamw_torch \
 --seed 0 \
---percentage 1.0 \
 --save_strategy epoch \
 --lora True \
 --lora_r 128 \

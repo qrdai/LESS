@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 cache_dir = "/root/autodl-tmp/huggingface/transformers" # `cache_dir` arg for .from_pretrained()
+# os.environ["CUDA_VISIBLE_DEVICES"]="0"  # use "0,1" when finetuning models >= 7B
 
 
 def main():
@@ -37,6 +38,18 @@ def main():
             json_file=os.path.abspath(sys.argv[1]))
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+
+    # determine dataset size by either percentage or num_samples
+    assert data_args.percentage is not None and data_args.num_samples is None \
+    or data_args.num_samples is not None and data_args.percentage is None
+
+    # convert num_samples from str -> list[int]
+    data_args.num_samples = list(map(int, data_args.num_samples.split('_')))
+    print(f"{type(data_args.train_files[0])}: {data_args.train_files}")
+    print(f"{type(data_args.num_samples[0])}: {data_args.num_samples}")
+    assert len(data_args.train_files) == len(data_args.num_samples)
+
+    # return
 
     # Setup logging
     logging.basicConfig(
@@ -75,6 +88,7 @@ def main():
                                          tokenizer=tokenizer,
                                          max_seq_length=data_args.max_seq_length,
                                          sample_percentage=data_args.percentage,
+                                         num_samples=data_args.num_samples,
                                          seed=data_args.sample_data_seed)
 
     # model = AutoModelForCausalLM.from_pretrained(

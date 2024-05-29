@@ -4,7 +4,9 @@ from typing import List, Union
 
 import numpy as np
 import torch
-from datasets import load_dataset
+from datasets import load_dataset, concatenate_datasets
+
+cache_dir = "/root/autodl-tmp/huggingface/datasets" # `cache_dir` arg for .load_dataset()
 
 
 @contextlib.contextmanager
@@ -18,34 +20,73 @@ def temp_seed(seed):
         np.random.set_state(state)
 
 
-def get_training_dataset(train_files: List[str], tokenizer, max_seq_length, sample_percentage=1.0, seed=0):
+def get_training_dataset(
+    train_files: List[str], 
+    tokenizer, 
+    max_seq_length, 
+    sample_percentage=None,
+    num_samples=None, 
+    seed=0
+):
     """ get training dataset with a specified seed """
 
     raw_datasets = load_raw_dataset(
-        train_files, sample_percentage=sample_percentage, seed=seed)
+        train_files, 
+        sample_percentage=sample_percentage, 
+        num_samples=num_samples,
+        seed=seed
+    )
     lm_datasets = encode_data(
         raw_datasets, tokenizer, max_seq_length)
     return lm_datasets
 
 
-def load_raw_dataset(train_files: Union[List[str], str], sample_size=None, sample_percentage=1.0, seed=0):
+def load_raw_dataset(
+    train_files: Union[List[str], str], 
+    sample_size=None, 
+    sample_percentage=None,
+    num_samples=None, 
+    seed=0
+):
     """ load raw dataset """
     if isinstance(train_files, str):
         train_files = [train_files]
-    processed_datasets = load_dataset(
-        "json",
-        data_files=train_files,
-    )["train"]
-    if sample_size is None:
-        sample_size = int(len(processed_datasets) * sample_percentage)
 
-    if sample_size == len(processed_datasets):
-        return processed_datasets  # not shuffle
+    if sample_percentage is not None:
+        processed_datasets = load_dataset(
+            "json",
+            data_files=train_files, # can be a list of paths
+            cache_dir=cache_dir
+        )["train"]
+        if sample_size is None:
+            sample_size = int(len(processed_datasets) * sample_percentage)
 
-    with temp_seed(seed):
-        index = np.random.permutation(len(processed_datasets))[:sample_size]
+        if sample_size == len(processed_datasets):
+            return processed_datasets  # not shuffle
 
-    sampled_dataset = processed_datasets.select(index)
+        with temp_seed(seed):
+            index = np.random.permutation(len(processed_datasets))[:sample_size]
+
+        sampled_dataset = processed_datasets.select(index)
+
+    elif num_samples is not None:
+        sampled_datasets = []
+
+        for file, size in zip(train_files, num_samples):
+            processed_dataset = load_dataset("json", data_files=file, cache_dir=cache_dir)["train"]
+
+            if size == len(processed_dataset):
+                pass
+            else:
+                with temp_seed(seed):
+                    index = np.random.permutation(len(processed_dataset))[:size]
+                processed_dataset = processed_dataset.select(index)
+            sampled_datasets.append(processed_dataset)
+
+        sampled_dataset = concatenate_datasets(sampled_datasets)
+
+    else:
+        raise NotImplementedError
 
     return sampled_dataset
 

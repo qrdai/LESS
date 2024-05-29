@@ -17,10 +17,13 @@ def none_or_str(value):
 
 @dataclass
 class DataArguments:
-    train_files: List[str] = field(default_factory=list, metadata={
-                                   "help": "The input training data files (multiple files in glob format)."})
+    train_files: List[str] = field(
+        default_factory=list, 
+        metadata={"help": "The input training data files (multiple files in glob format)."}
+    )
     overwrite_cache: bool = field(
-        default=False, metadata={"help": "Overwrite the cached training and evaluation sets"}
+        default=False, 
+        metadata={"help": "Overwrite the cached training and evaluation sets"}
     )
     preprocessing_num_workers: Optional[int] = field(
         default=None,
@@ -33,10 +36,16 @@ class DataArguments:
         },
     )
     sample_data_seed: int = field(
-        default=42, metadata={"help": ("The seed used for data sampling.")},
+        default=42, 
+        metadata={"help": ("The seed used for data sampling.")},
     )
-    percentage: float = field(
-        default=1.0, metadata={"help": ("Sampling percentage for each dataset")},
+    percentage: Optional[float] = field(
+        default=None, 
+        metadata={"help": ("Sampling percentage for each dataset")},
+    )
+    num_samples: Optional[str] = field(
+        default=None,
+        metadata={"help": "A string containing the numbers of data points to be sampled from each dataset, separated by '_'."}
     )
 
 
