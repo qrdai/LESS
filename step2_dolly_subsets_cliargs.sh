@@ -1,3 +1,5 @@
+# export CUDA_VISIBLE_DEVICES=0
+
 # fixed arguments
 GRADIENT_TYPE="adam"
 DIMS="8192"
@@ -6,11 +8,17 @@ DIMS="8192"
 subset_list=("summarization" "brainstorming" "closed_qa" "creative_writing" "information_extraction" "classification" "open_qa" "general_qa")
 
 # assigned by external script
-CKPT_list=("422" "845" "1268" "1688")   # TinyLlama-1.1B-p0.05-lora-seed3-fsdp
+# CKPT_list=("422" "845" "1268" "1688")   # TinyLlama-1.1B-p0.05-lora-seed3-fsdp
 # CKPT_list=("469" "938" "1407" "1876")   # TinyLlama-1.1B-p1.0-lora-seed3-fsdp-dollyonly
 
-REFERENCE_MODEL=TinyLlama-1.1B-p0.05-lora-seed3-fsdp
+# all but last argument are CKPT_list
+CKPT_list=("${@:1:$#-1}")
+
+# REFERENCE_MODEL=TinyLlama-1.1B-p0.05-lora-seed3-fsdp
 # REFERENCE_MODEL=TinyLlama-1.1B-p1.0-lora-seed3-fsdp-dollyonly
+
+# last argument is REFERENCE_MODEL
+REFERENCE_MODEL="${@: -1}"
 
 # nested loops
 for CKPT in "${CKPT_list[@]}"

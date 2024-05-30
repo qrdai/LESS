@@ -205,6 +205,7 @@ def main():
             pytorch_model_path) else None
 
     # Check and Kill active wandb-service processes, to avoid eternal upload
+    # TODO: if launch two jobs simultaneously on different GPUs, then must comment this to prevent the second job from being force killed
     try:
         initial_check = subprocess.check_output(['pgrep', '-u', 'root', '-f', '^wandb-service'])
         print("wandb-service processes found, will check again in 60 seconds.")

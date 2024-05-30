@@ -19,7 +19,8 @@ from less.data_selection.get_validation_dataset import (get_dataloader,
                                                         get_dataset)
 
 cache_dir = "/root/autodl-tmp/huggingface/transformers" # `cache_dir` arg for .from_pretrained()
-os.environ["CUDA_VISIBLE_DEVICES"]="0"  # place the model on only one GPU; otherwise error: tensors on different devices
+# CUDA_VISIBLE_DEVICES is now set in bash scripts
+# os.environ["CUDA_VISIBLE_DEVICES"]="0"  # place the model on only one GPU; otherwise error: tensors on different devices
 
 
 def load_model(model_name_or_path: str,
