@@ -14,10 +14,8 @@ def verify_and_measure_time(args):
 
     if args.load_mode == "cuda":
         model = AutoModelForCausalLM.from_pretrained(args.model_name_or_path, cache_dir=args.cache_dir, device_map="auto") # 已经自动做了 device_map, 那就不需要 .to(device)
-        # model = AutoModelForCausalLM.from_pretrained(args.model_name_or_path, device_map="auto")
     elif args.load_mode == "cpu":
         model = AutoModelForCausalLM.from_pretrained(args.model_name_or_path, cache_dir=args.cache_dir).to(args.load_mode)
-        # model = AutoModelForCausalLM.from_pretrained(args.model_name_or_path).to(args.load_mode)
     end_time_1 = time.time()    # to measure time Loading checkpoint shards
 
     # Ensure the model is in evaluation mode
@@ -40,13 +38,13 @@ def verify_and_measure_time(args):
 def main():
     parser = argparse.ArgumentParser(description='args for verifying models downloaded from hf')
     parser.add_argument('--model_name_or_path', type=str, help='path to hf model')
-    parser.add_argument('--cache_dir', type=str, help='path to cache dir containing model weights', default="/root/autodl-tmp/huggingface/transformers")
+    parser.add_argument('--cache_dir', type=str, help='path to cache dir containing model weights', default="/projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/transformers")
     parser.add_argument('--load_mode', type=str, help='loading with cuda or cpu', choices=["cuda", "cpu"])
     parser.add_argument('--input_text', type=str, help='prompt for starting completion', default="I am a friendly assistant called ")
 
     args = parser.parse_args()
 
-    args.input_text = r'''I am a friendly assistant called '''
+    args.input_text = r'''You and I're going rough at each other like we're going to war'''
     verify_and_measure_time(args)
 
 

@@ -6,6 +6,8 @@ import numpy as np
 import torch
 from datasets import load_dataset
 
+dataset_cache_dir = "/projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets" # `cache_dir` arg for .load_dataset()
+
 
 @contextlib.contextmanager
 def temp_seed(seed):
@@ -35,6 +37,7 @@ def load_raw_dataset(train_files: Union[List[str], str], sample_size=None, sampl
     processed_datasets = load_dataset(
         "json",
         data_files=train_files,
+        cache_dir=dataset_cache_dir
     )["train"]
     if sample_size is None:
         sample_size = int(len(processed_datasets) * sample_percentage)

@@ -1,4 +1,5 @@
 # input_text is assigned inside the python script
+
 # for load_mode in "cuda" "cpu"
 # do
 #     python verify_hf_download.py \
@@ -8,6 +9,6 @@
 # done
 
 python verify_hf_download.py \
-    --model_name_or_path "TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T" \
-    --cache_dir "/root/autodl-tmp/huggingface/transformers" \
+    --model_name_or_path "mistralai/Mistral-7B-v0.1" \
+    --cache_dir "/projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/transformers" \
     --load_mode "cuda"

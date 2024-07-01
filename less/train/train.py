@@ -26,7 +26,12 @@ from less.train.training_arguments import TrainingArguments
 logger = logging.getLogger(__name__)
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-cache_dir = "/root/autodl-tmp/huggingface/transformers" # `cache_dir` arg for .from_pretrained()
+hf_home = "/projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface"
+os.environ['HF_HOME'] = hf_home
+model_cache_dir = f"{hf_home}/transformers" # `cache_dir` arg for .from_pretrained()
+os.environ['WANDB_PROJECT'] = "LESS_Reproduce"
+os.environ['WANDB_CACHE_DIR'] = "/projects/illinois/eng/cs/haopeng/qirundai/.cache/wandb"
+os.environ['WANDB_CONFIG_DIR'] = "/projects/illinois/eng/cs/haopeng/qirundai/.config/wandb"
 
 
 def main():
@@ -69,7 +74,7 @@ def main():
     set_seed(training_args.seed)
 
     # tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path)
-    tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, cache_dir=cache_dir)
+    tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, cache_dir=model_cache_dir)
     # Load training dataset
     train_dataset = get_training_dataset(data_args.train_files,
                                          tokenizer=tokenizer,
@@ -84,7 +89,7 @@ def main():
     model = AutoModelForCausalLM.from_pretrained(
         model_args.model_name_or_path, 
         torch_dtype=model_args.torch_dtype,
-        cache_dir=cache_dir
+        cache_dir=model_cache_dir
     )
     add_padding_to_tokenizer(tokenizer)
 
@@ -190,37 +195,38 @@ def main():
         os.remove(pytorch_model_path) if os.path.exists(
             pytorch_model_path) else None
 
-    # Check and Kill active wandb-service processes, to avoid eternal upload
-    try:
-        initial_check = subprocess.check_output(['pgrep', '-u', 'root', '-f', '^wandb-service'])
-        print("wandb-service processes found, will check again in 60 seconds.")
+    # No need for CC at UIUC
+    # # Check and Kill active wandb-service processes, to avoid eternal upload
+    # try:
+    #     initial_check = subprocess.check_output(['pgrep', '-u', 'root', '-f', '^wandb-service'])
+    #     print("wandb-service processes found, will check again in 60 seconds.")
 
-        time.sleep(60)  # Wait for 60 seconds
+    #     time.sleep(60)  # Wait for 60 seconds
 
-        try:
-            processes = subprocess.check_output(['pgrep', '-u', 'root', '-f', '^wandb-service'])
-            pids = processes.decode('utf-8').strip().split()
-            for pid in pids:
-                # directly send SIGKILL
-                print(f"Killing process ID {pid}")
-                os.kill(int(pid), signal.SIGKILL)  # Ensure PID is an integer and use SIGKILL to force kill
+    #     try:
+    #         processes = subprocess.check_output(['pgrep', '-u', 'root', '-f', '^wandb-service'])
+    #         pids = processes.decode('utf-8').strip().split()
+    #         for pid in pids:
+    #             # directly send SIGKILL
+    #             print(f"Killing process ID {pid}")
+    #             os.kill(int(pid), signal.SIGKILL)  # Ensure PID is an integer and use SIGKILL to force kill
 
-                # "Graceful Shutdown" by sending SIGTERM first and then SIGKILL
-                # pid = int(pid)
-                # print(f"Sending SIGTERM to process ID {pid}")
-                # os.kill(pid, signal.SIGTERM)
-                # # Wait and check if the process is still running, then force kill
-                # time.sleep(5)  # Wait for 5 seconds
-                # try:
-                #     subprocess.check_output(['ps', '-p', str(pid)])
-                #     print(f"Process {pid} did not terminate, sending SIGKILL.")
-                #     os.kill(pid, signal.SIGKILL)
-                # except subprocess.CalledProcessError:
-                #     print(f"Process {pid} has terminated.")
-        except subprocess.CalledProcessError:
-            print("No wandb-service processes found after waiting, or already terminated.")
-    except subprocess.CalledProcessError:
-        print("No initial wandb-service processes found, no need to wait.")
+    #             # "Graceful Shutdown" by sending SIGTERM first and then SIGKILL
+    #             # pid = int(pid)
+    #             # print(f"Sending SIGTERM to process ID {pid}")
+    #             # os.kill(pid, signal.SIGTERM)
+    #             # # Wait and check if the process is still running, then force kill
+    #             # time.sleep(5)  # Wait for 5 seconds
+    #             # try:
+    #             #     subprocess.check_output(['ps', '-p', str(pid)])
+    #             #     print(f"Process {pid} did not terminate, sending SIGKILL.")
+    #             #     os.kill(pid, signal.SIGKILL)
+    #             # except subprocess.CalledProcessError:
+    #             #     print(f"Process {pid} has terminated.")
+    #     except subprocess.CalledProcessError:
+    #         print("No wandb-service processes found after waiting, or already terminated.")
+    # except subprocess.CalledProcessError:
+    #     print("No initial wandb-service processes found, no need to wait.")
 
 
 if __name__ == "__main__":
