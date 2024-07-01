@@ -115,7 +115,7 @@ def obtain_gradients_with_adam(model, batch, avg, avg_sq):
     eps = 1e-08
 
     loss = model(**batch).loss
-    loss.backward()
+    loss.backward() # must forward and backprop to get each batch of loss grad 
 
     vectorized_grads = torch.cat(
         [p.grad.view(-1) for n, p in model.named_parameters() if p.grad is not None])
@@ -179,7 +179,7 @@ def collect_grads(dataloader,
             projected_grads[dim] = torch.cat(projected_grads[dim])
 
             output_dir = output_dirs[dim]
-            outfile = os.path.join(output_dir, f"grads-{count}.pt")
+            outfile = os.path.join(output_dir, f"grads-{count}.pt") # grads-{count}.pt is saved in the same order as original `dataset` (dataloader)
             torch.save(projected_grads[dim], outfile)
             print(
                 f"Saving {outfile}, {projected_grads[dim].shape}", flush=True)
@@ -216,14 +216,14 @@ def collect_grads(dataloader,
 
     count = 0
 
-    # set up a output directory for each dimension
+    # set up an output directory for each dimension
     output_dirs = {}
     for dim in proj_dim:
         output_dir_per_dim = os.path.join(output_dir, f"dim{dim}")
         output_dirs[dim] = output_dir_per_dim
         os.makedirs(output_dir_per_dim, exist_ok=True)
 
-    # max index for each dimension
+    # max index for each dimension -> to resume calculation from where you stop last time
     max_index = min(get_max_saved_index(
         output_dirs[dim], "grads") for dim in proj_dim)
 
@@ -254,11 +254,11 @@ def collect_grads(dataloader,
 
         # add the gradients to the full_grads
         full_grads.append(vectorized_grads)
-        model.zero_grad()
+        model.zero_grad()   # clean the forward and backprop trace in `obtain_gradients_with_adam`
 
         if count % project_interval == 0:
             _project(full_grads, projected_grads)
-            full_grads = []
+            full_grads = [] # clean full_grads for storing next interval
 
         if count % save_interval == 0:
             _save(projected_grads, output_dirs)

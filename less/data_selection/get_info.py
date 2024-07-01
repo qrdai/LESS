@@ -18,8 +18,10 @@ from less.data_selection.get_training_dataset import get_training_dataset
 from less.data_selection.get_validation_dataset import (get_dataloader,
                                                         get_dataset)
 
-cache_dir = "/root/autodl-tmp/huggingface/transformers" # `cache_dir` arg for .from_pretrained()
-os.environ["CUDA_VISIBLE_DEVICES"]="0"  # place the model on only one GPU; otherwise error: tensors on different devices
+hf_home = "/projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface"
+os.environ['HF_HOME'] = hf_home
+model_cache_dir = f"{hf_home}/transformers" # `cache_dir` arg for .from_pretrained()
+# os.environ["CUDA_VISIBLE_DEVICES"]="0"  # place the model on only one GPU; otherwise error: tensors on different devices
 
 
 def load_model(model_name_or_path: str,
@@ -39,25 +41,25 @@ def load_model(model_name_or_path: str,
         model_name_or_path, "adapter_config.json"))
     if is_peft:
         # load this way to make sure that optimizer states match the model structure
-        config = LoraConfig.from_pretrained(model_name_or_path, cache_dir=cache_dir)
+        config = LoraConfig.from_pretrained(model_name_or_path, cache_dir=model_cache_dir)
         base_model = AutoModelForCausalLM.from_pretrained(
             config.base_model_name_or_path, 
             torch_dtype=torch_dtype, 
             device_map="auto",
-            cache_dir=cache_dir
+            cache_dir=model_cache_dir
         )
         model = PeftModel.from_pretrained(
             base_model, 
             model_name_or_path, 
             device_map="auto",
-            cache_dir=cache_dir
+            cache_dir=model_cache_dir
         )
     else:
         model = AutoModelForCausalLM.from_pretrained(
             model_name_or_path, 
             torch_dtype=torch_dtype, 
             device_map="auto",
-            cache_dir=cache_dir
+            cache_dir=model_cache_dir
         )
 
     for name, param in model.named_parameters():
@@ -88,6 +90,7 @@ parser.add_argument("--gradient_projection_dimension", nargs='+',
                     help="The dimension of the projection, can be a list", type=int, default=[8192])
 parser.add_argument("--gradient_type", type=str, default="adam",
                     choices=["adam", "sign", "sgd"], help="The type of gradient")
+# the following 4 args are only used in getting eval/training datasets
 parser.add_argument("--chat_format", type=str,
                     default="tulu", help="The chat format")
 parser.add_argument("--use_chat_format", type=bool,
@@ -96,6 +99,9 @@ parser.add_argument("--max_length", type=int, default=2048,
                     help="The maximum length")
 parser.add_argument("--zh", default=False, action="store_true",
                     help="Whether we are loading a translated chinese version of tydiqa dev data (Only applicable to tydiqa)")
+# the following args are only used when `--initialize_lora=True`
+# by default, is_peft=True, thus the following args are not used,
+# that's the reason why they are not aligned with `base_training_args.sh`
 parser.add_argument("--initialize_lora", default=False, action="store_true",
                     help="Whether to initialize the base model with lora, only works when is_peft is False")
 parser.add_argument("--lora_r", type=int, default=8,
@@ -110,19 +116,20 @@ parser.add_argument("--lora_target_modules", nargs='+', default=[
 args = parser.parse_args()
 assert args.task is not None or args.train_file is not None
 
-tokenizer = AutoTokenizer.from_pretrained(args.model_path, cache_dir=cache_dir)
+
+tokenizer = AutoTokenizer.from_pretrained(args.model_path, cache_dir=model_cache_dir)
 dtype = torch.float16 if args.torch_dtype == "float16" else torch.bfloat16
 model = load_model(args.model_path, dtype)
 
 # pad token is not added by default for pretrained models
 if tokenizer.pad_token is None:
     tokenizer.add_special_tokens({"pad_token": "<pad>"})
-
 # resize embeddings if needed (e.g. for LlamaTokenizer)
 embedding_size = model.get_input_embeddings().weight.shape[0]
 if len(tokenizer) > embedding_size:
     model.resize_token_embeddings(len(tokenizer))
 
+# if `is_peft=False` in `load_model`
 if args.initialize_lora:
     assert not isinstance(model, PeftModel)
     lora_config = LoraConfig(
@@ -138,12 +145,14 @@ if args.initialize_lora:
 if isinstance(model, PeftModel):
     model.print_trainable_parameters()
 
+
 adam_optimizer_state = None
 if args.info_type == "grads" and args.gradient_type == "adam":
     optimizer_path = os.path.join(args.model_path, "optimizer.bin") # original by mengzhou
     # optimizer_path = os.path.join(args.model_path, "optimizer.pt")  # ckpt name modified
     adam_optimizer_state = torch.load(
         optimizer_path, map_location="cpu")["state"]
+
 
 if args.task is not None:
     dataset = get_dataset(args.task,
@@ -153,7 +162,7 @@ if args.task is not None:
                           use_chat_format=args.use_chat_format,
                           max_length=args.max_length,
                           zh=args.zh)
-    dataloader = get_dataloader(dataset, tokenizer=tokenizer)
+    dataloader = get_dataloader(dataset, tokenizer=tokenizer)   # batch_size default to 1
 else:
     assert args.train_file is not None
     dataset = get_training_dataset(
@@ -163,7 +172,7 @@ else:
     columns.remove("labels")
     columns.remove("attention_mask")
     dataset = dataset.remove_columns(columns)
-    dataloader = get_dataloader(dataset, tokenizer=tokenizer)
+    dataloader = get_dataloader(dataset, tokenizer=tokenizer)   # batch_size default to 1
 
 if args.max_samples is None:
     args.max_samples = len(dataset)

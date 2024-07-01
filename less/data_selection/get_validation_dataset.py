@@ -42,6 +42,9 @@ def tokenize(tokenizer: PreTrainedTokenizerBase,
     full_input_ids = torch.tensor(
         tokenizer.encode(full_prompt, max_length=max_length))
     labels = torch.tensor(tokenizer.encode(full_prompt, max_length=max_length))
+
+    # attn_mask should retain full_prompt: query + completion, since model always needs to see query to understand the whole instruction pair
+    # labels should mask loss on query and only expose completion, since we always "train on completion only"
     labels[:len(prompt_input_ids)] = -100
     attention_mask = [1] * len(full_input_ids)
 
@@ -324,6 +327,6 @@ def get_dataloader(dataset, tokenizer, batch_size=1):
             tokenizer=tokenizer, padding="longest") 
     dataloader = DataLoader(dataset,
                             batch_size=batch_size,  # When getting gradients, we only do this single batch process
-                            collate_fn=data_collator)
-    print("There are {} examples in the dataset".format(len(dataset)))
+                            collate_fn=data_collator)   # `shuffle` default to False, so preserve the original order of `dataset`
+    print("There are {} examples in the dataset".format(len(dataset)))  # batch_size always default to 1, so len(dataset) == # examples
     return dataloader

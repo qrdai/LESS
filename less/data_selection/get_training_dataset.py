@@ -36,7 +36,7 @@ def load_raw_dataset(train_files: Union[List[str], str], sample_size=None, sampl
         train_files = [train_files]
     processed_datasets = load_dataset(
         "json",
-        data_files=train_files,
+        data_files=train_files, # can be a list of paths (in step 1) or a str of one path (in step 2&3)
         cache_dir=dataset_cache_dir
     )["train"]
     if sample_size is None:
@@ -59,7 +59,7 @@ def encode_data(raw_datasets, tokenizer, max_seq_length, processing_num_workers=
     if "input_ids" in raw_datasets.features:
         return raw_datasets
     encode_function = get_encode_function(
-        raw_datasets, tokenizer, max_seq_length, func_name)
+        raw_datasets, tokenizer, max_seq_length, func_name) # `func_name` default to encode_with_messages_format
     # To speed up this part, we use multiprocessing.
     lm_datasets = raw_datasets.map(
         encode_function,
@@ -78,11 +78,12 @@ def get_encode_function(raw_datasets, tokenizer, max_seq_length, func="encode_wi
         encode_function = partial(
             encode_with_prompt_completion_format,
             tokenizer=tokenizer,
-            max_seq_length=max_seq_length,
+            max_seq_length=max_seq_length,  # raw_datasets and tokenizer are preconfigured fixed arguments,
+            # so `encode_function` can be directly passed into Dataset.map() since the two args no need to be set
         )
     elif "messages" in raw_datasets.column_names:
         if func == "encode_with_messages_format":
-            encode_func = encode_with_messages_format
+            encode_func = encode_with_messages_format   # default choice, since no `func_name` arg in `get_training_dataset`
         else:
             encode_func = encode_with_messages_format_with_llama2_chat
         encode_function = partial(
@@ -135,7 +136,7 @@ def encode_with_messages_format(example, tokenizer, max_seq_length):
     '''
     messages = example['messages']
     if len(messages) == 0:
-        raise ValueError('messages field is empty.')
+        raise ValueError('messages field is empty.')    # a good way to detect outliers in training set
 
     example_text = concat_messages(messages, tokenizer)
     tokenized_example = tokenizer(
@@ -153,7 +154,7 @@ def encode_with_messages_format(example, tokenizer, max_seq_length):
                     concat_messages(messages[:message_idx], tokenizer), return_tensors='pt', max_length=max_seq_length, truncation=True
                 ).input_ids.shape[1]
             if message_idx < len(messages) - 1 and messages[message_idx+1]["role"] == "assistant":
-                # here we also ignore the role of the assistant
+                # here we also ignore, "<|assistant|>\n", the role-identifier text
                 messages_so_far = concat_messages(
                     messages[:message_idx+1], tokenizer) + "<|assistant|>\n"
             else:
@@ -170,7 +171,7 @@ def encode_with_messages_format(example, tokenizer, max_seq_length):
             if message_end_idx >= max_seq_length:
                 break
 
-    attention_mask = torch.ones_like(input_ids)
+    attention_mask = torch.ones_like(input_ids) # as in `get_validation_dataset.py`, attn_mask is all 1s, but labels should mask query parts 
     return {
         'input_ids': input_ids.flatten(),
         'labels': labels.flatten(),
@@ -187,7 +188,7 @@ def concat_messages(messages, tokenizer):
             message_text += "<|user|>\n" + message["content"].strip() + "\n"
         elif message["role"] == "assistant":
             message_text += "<|assistant|>\n" + \
-                message["content"].strip() + tokenizer.eos_token + "\n"
+                message["content"].strip() + tokenizer.eos_token + "\n" # for multi-round conversation data, each round should end with an eos_token
         else:
             raise ValueError("Invalid role: {}".format(message["role"]))
     return message_text

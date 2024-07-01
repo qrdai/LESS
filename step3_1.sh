@@ -3,11 +3,8 @@ TASK=mmlu
 DATA_DIR=../data
 DIMS="8192" # We use 8192 as our default projection dimension
 
-CKPT_list=("422" "845" "1268" "1688") # TinyLlama-1.1B-p0.05-lora-seed3-fsdp
-# CKPT_list=("469" "938" "1407" "1876")   # TinyLlama-1.1B-p1.0-lora-seed3-fsdp-dollyonly
-
-REFERENCE_MODEL=TinyLlama-1.1B-p0.05-lora-seed3-fsdp
-# REFERENCE_MODEL=TinyLlama-1.1B-p1.0-lora-seed3-fsdp-dollyonly
+CKPT_list=("422" "845" "1268" "1688") # original 4 datasets-p0.05-bsz32
+REFERENCE_MODEL=Llama-2-7b-p0.05-lora-seed3-bsz32
 
 for CKPT in "${CKPT_list[@]}"
 do

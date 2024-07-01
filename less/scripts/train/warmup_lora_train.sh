@@ -14,9 +14,9 @@ if [[ ! -d $output_dir ]]; then
 fi
 
 train_files=(
-    "$data_dir/train/processed/flan_v2/flan_v2_data.jsonl"
     "$data_dir/train/processed/cot/cot_data.jsonl"
     "$data_dir/train/processed/dolly/dolly_data.jsonl"  # finetune a tinyllama on the whole dolly dataset only
+    "$data_dir/train/processed/flan_v2/flan_v2_data.jsonl"
     "$data_dir/train/processed/oasst1/oasst1_data.jsonl"
 )
 
