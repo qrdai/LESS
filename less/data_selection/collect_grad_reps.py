@@ -129,7 +129,7 @@ def obtain_gradients_with_adam(model, batch, avg, avg_sq):
 
 def prepare_optimizer_state(model, optimizer_state, device):
     names = [n for n, p in model.named_parameters() if p.requires_grad]
-    avg = torch.cat([optimizer_state[n]["exp_avg"].view(-1) for n in names])
+    avg = torch.cat([optimizer_state[n]["exp_avg"].view(-1) for n in names])    # optimizer_state should be a key-value dict instead of index-value
     avg_sq = torch.cat([optimizer_state[n]["exp_avg_sq"].view(-1)
                        for n in names])
     avg = avg.to(device)
@@ -342,6 +342,7 @@ def collect_reps(dataloader: torch.utils.data.DataLoader,
     max_index = get_max_saved_index(output_dir, prefix="reps")
 
     for batch in tqdm(dataloader):
+        # batch_size is default to 1, and this for loop preserves the original order of dataloader (dataset)
         count += 1
         if count <= max_index:
             print("skipping count", count)
