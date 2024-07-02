@@ -3,12 +3,12 @@ GRADIENT_TYPE="adam"
 DIMS="8192"
 
 # looping args
-CKPT_list=("422" "845" "1268" "1688")   # original 4 datasets-p0.05-bsz32
-# CKPT_list=("211" "422" "634" "844") # original 4 datasets-p0.05-bsz32-fsdp on 2 GPUs (for mistral-7B)
+# CKPT_list=("422" "845" "1268" "1688")   # original 4 datasets-p0.05-bsz32
+CKPT_list=("211" "422" "634" "844") # original 4 datasets-p0.05-bsz32-fsdp on 2 GPUs (for mistral-7B)
 dataset_list=("cot" "dolly" "flan_v2" "oasst1")
 
-REFERENCE_MODEL=Llama-2-7b-p0.05-lora-seed3-bsz32
-# REFERENCE_MODEL=Mistral-7B-v0.1-p0.05-lora-seed3-bsz32
+# REFERENCE_MODEL=Llama-2-7b-p0.05-lora-seed3-bsz32
+REFERENCE_MODEL=Mistral-7B-v0.1-p0.05-lora-seed3-bsz32
 
 # nested loops
 for CKPT in "${CKPT_list[@]}"

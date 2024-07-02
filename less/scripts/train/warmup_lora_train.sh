@@ -20,17 +20,16 @@ train_files=(
     "$data_dir/train/processed/oasst1/oasst1_data.jsonl"
 )
 
-# # use fsdp for large models
-# if [[ $model_path == "meta-llama/Llama-2-13b-hf" ]]; then
-#     base_training_args="$base_training_args --fsdp 'full_shard auto_wrap' --fsdp_config llama2_13b_finetune"
-#     elif [[ $model_path == "mistralai/Mistral-7B-v0.1" ]]; then
-#     base_training_args="$base_training_args --fsdp 'full_shard auto_wrap' --fsdp_config mistral_7b_finetune"
-# fi
 
 # use fsdp for all types of models, in order to obtain `optimizer.bin` with str-based keys
+if [[ $model_path == *"llama"* ]]; then
+    base_training_args="$base_training_args --fsdp 'full_shard auto_wrap' --fsdp_config llama_finetune"
+elif [[ $model_path == *"mistral"* ]]; then
+    base_training_args="$base_training_args --fsdp 'full_shard auto_wrap' --fsdp_config mistral_7b_finetune"
+fi
+
+
 training_args="$base_training_args \
---fsdp 'full_shard auto_wrap' \
---fsdp_config llama_finetune \
 --model_name_or_path $model_path \
 --output_dir $output_dir \
 --percentage $percentage \

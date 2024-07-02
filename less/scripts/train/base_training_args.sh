@@ -1,7 +1,8 @@
 #!/bin/bash
 
 ID=$RANDOM
-export header="torchrun --nproc_per_node 1 --nnodes 1 \
+# --nproc_per_node=2 for larger model such as mistral-7B
+export header="torchrun --nproc_per_node 2 --nnodes 1 \
 --rdzv-id=$ID --rdzv_backend c10d \
 -m less.train.train"
 

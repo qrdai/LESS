@@ -1,0 +1,578 @@
+/var/spool/slurmd/job11822273/slurm_script: line 0: unalias: f95: not found
+/var/spool/slurmd/job11822273/slurm_script: line 0: unalias: cc: not found
+[2024-07-01 17:34:51,585] torch.distributed.run: [WARNING] master_addr is only used for static rdzv_backend and when rdzv_endpoint is not specified.
+07/01/2024 17:35:09 - WARNING - __main__ - Process rank: 0, device: cuda:0, n_gpu: 1distributed training: True, 16-bits training: False
+07/01/2024 17:35:09 - INFO - __main__ - Training parameters TrainingArguments(
+_n_gpu=1,
+adafactor=False,
+adam_beta1=0.9,
+adam_beta2=0.999,
+adam_epsilon=1e-08,
+analysis_dataset=bbh,
+analysis_mode=False,
+auto_find_batch_size=False,
+bf16=True,
+bf16_full_eval=False,
+data_seed=3,
+dataloader_drop_last=False,
+dataloader_num_workers=0,
+dataloader_persistent_workers=False,
+dataloader_pin_memory=True,
+ddp_backend=None,
+ddp_broadcast_buffers=None,
+ddp_bucket_cap_mb=None,
+ddp_find_unused_parameters=None,
+ddp_timeout=1800,
+debug=[],
+deepspeed=None,
+disable_tqdm=False,
+dispatch_batches=None,
+do_eval=False,
+do_predict=False,
+do_train=True,
+eval_accumulation_steps=None,
+eval_delay=0,
+eval_steps=None,
+evaluation_strategy=IntervalStrategy.NO,
+fp16=False,
+fp16_backend=auto,
+fp16_full_eval=False,
+fp16_opt_level=O1,
+fsdp=[<FSDPOption.FULL_SHARD: 'full_shard'>, <FSDPOption.AUTO_WRAP: 'auto_wrap'>],
+fsdp_config={'fsdp_transformer_layer_cls_to_wrap': ['MistralDecoderLayer'], 'fsdp_backward_prefetch': 'backward_pre', 'limit_all_gathers': 'true', 'use_orig_params': 'true', 'min_num_params': 0, 'xla': False, 'xla_fsdp_grad_ckpt': False},
+fsdp_min_num_params=0,
+fsdp_transformer_layer_cls_to_wrap=None,
+full_determinism=False,
+gradient_accumulation_steps=32,
+gradient_checkpointing=False,
+gradient_checkpointing_kwargs=None,
+greater_is_better=None,
+group_by_length=False,
+half_precision_backend=auto,
+hub_always_push=False,
+hub_model_id=None,
+hub_private_repo=False,
+hub_strategy=HubStrategy.EVERY_SAVE,
+hub_token=<HUB_TOKEN>,
+ignore_data_skip=False,
+include_inputs_for_metrics=False,
+include_num_input_tokens_seen=False,
+include_tokens_per_second=False,
+jit_mode_eval=False,
+label_names=None,
+label_smoothing_factor=0.0,
+learning_rate=2e-05,
+length_column_name=length,
+load_best_model_at_end=False,
+local_rank=0,
+log_level=passive,
+log_level_replica=warning,
+log_on_each_node=True,
+logging_dir=../out/Mistral-7B-v0.1-p0.05-lora-seed3-bsz32/runs/Jul01_17-35-05_ccc0422.campuscluster.illinois.edu,
+logging_first_step=False,
+logging_nan_inf_filter=True,
+logging_steps=1.0,
+logging_strategy=IntervalStrategy.STEPS,
+lr_scheduler_kwargs={},
+lr_scheduler_type=SchedulerType.LINEAR,
+max_grad_norm=1.0,
+max_steps=-1,
+metric_for_best_model=None,
+mp_parameters=,
+neftune_noise_alpha=None,
+no_cuda=False,
+num_train_epochs=4.0,
+optim=OptimizerNames.ADAMW_TORCH,
+optim_args=None,
+output_dir=../out/Mistral-7B-v0.1-p0.05-lora-seed3-bsz32,
+overwrite_output_dir=True,
+past_index=-1,
+per_device_eval_batch_size=8,
+per_device_train_batch_size=1,
+prediction_loss_only=False,
+push_to_hub=False,
+push_to_hub_model_id=None,
+push_to_hub_organization=None,
+push_to_hub_token=<PUSH_TO_HUB_TOKEN>,
+ray_scope=last,
+remove_unused_columns=True,
+report_to=['wandb'],
+resume_from_checkpoint=None,
+run_name=../out/Mistral-7B-v0.1-p0.05-lora-seed3-bsz32,
+save_on_each_node=False,
+save_only_model=False,
+save_safetensors=True,
+save_steps=500,
+save_strategy=IntervalStrategy.EPOCH,
+save_total_limit=None,
+seed=0,
+skip_memory_metrics=True,
+split_batches=False,
+tf32=False,
+torch_compile=False,
+torch_compile_backend=None,
+torch_compile_mode=None,
+torchdynamo=None,
+tpu_metrics_debug=False,
+tpu_num_cores=None,
+train_dataset_names=None,
+use_cpu=False,
+use_ipex=False,
+use_legacy_prediction_loop=False,
+use_mps_device=False,
+warmup_ratio=0.03,
+warmup_steps=0,
+weight_decay=0.0,
+)
+07/01/2024 17:35:09 - INFO - __main__ - Model parameters ModelArguments(model_name_or_path='mistralai/Mistral-7B-v0.1', config_name=None, tokenizer_name=None, cache_dir=None, use_fast_tokenizer=True, model_revision='main', use_auth_token=False, torch_dtype=None, lora=True, lora_r=128, lora_alpha=512.0, lora_dropout=0.1, lora_target_modules=['q_proj', 'k_proj', 'v_proj', 'o_proj'])
+07/01/2024 17:35:09 - INFO - __main__ - Dataset parameters DataArguments(train_files=['../data/train/processed/cot/cot_data.jsonl', '../data/train/processed/dolly/dolly_data.jsonl', '../data/train/processed/flan_v2/flan_v2_data.jsonl', '../data/train/processed/oasst1/oasst1_data.jsonl'], overwrite_cache=False, preprocessing_num_workers=None, max_seq_length=2048, sample_data_seed=42, percentage=0.05)
+/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/huggingface_hub/file_download.py:1132: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+[INFO|tokenization_utils_base.py:2026] 2024-07-01 17:35:09,118 >> loading file tokenizer.model from cache at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/transformers/models--mistralai--Mistral-7B-v0.1/snapshots/26bca36bde8333b5d7f72e9ed20ccda6a618af24/tokenizer.model
+[INFO|tokenization_utils_base.py:2026] 2024-07-01 17:35:09,118 >> loading file tokenizer.json from cache at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/transformers/models--mistralai--Mistral-7B-v0.1/snapshots/26bca36bde8333b5d7f72e9ed20ccda6a618af24/tokenizer.json
+[INFO|tokenization_utils_base.py:2026] 2024-07-01 17:35:09,118 >> loading file added_tokens.json from cache at None
+[INFO|tokenization_utils_base.py:2026] 2024-07-01 17:35:09,118 >> loading file special_tokens_map.json from cache at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/transformers/models--mistralai--Mistral-7B-v0.1/snapshots/26bca36bde8333b5d7f72e9ed20ccda6a618af24/special_tokens_map.json
+[INFO|tokenization_utils_base.py:2026] 2024-07-01 17:35:09,118 >> loading file tokenizer_config.json from cache at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/transformers/models--mistralai--Mistral-7B-v0.1/snapshots/26bca36bde8333b5d7f72e9ed20ccda6a618af24/tokenizer_config.json
+Using custom data configuration default-31e5e754aa58de8e
+07/01/2024 17:35:09 - INFO - datasets.builder - Using custom data configuration default-31e5e754aa58de8e
+Loading Dataset Infos from /projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/datasets/packaged_modules/json
+07/01/2024 17:35:09 - INFO - datasets.info - Loading Dataset Infos from /projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/datasets/packaged_modules/json
+Generating dataset json (/projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a)
+07/01/2024 17:35:09 - INFO - datasets.builder - Generating dataset json (/projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a)
+Downloading and preparing dataset json/default to /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a...
+07/01/2024 17:35:09 - INFO - datasets.builder - Downloading and preparing dataset json/default to /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a...
+Downloading took 0.0 min
+07/01/2024 17:35:09 - INFO - datasets.download.download_manager - Downloading took 0.0 min
+Checksum Computation took 0.0 min
+07/01/2024 17:35:09 - INFO - datasets.download.download_manager - Checksum Computation took 0.0 min
+Generating train split
+07/01/2024 17:35:09 - INFO - datasets.builder - Generating train split
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 52131 examples [00:00, 404395.22 examples/s]Generating train split: 100000 examples [00:00, 207609.42 examples/s]Generating train split: 150029 examples [00:00, 223781.31 examples/s]Generating train split: 184894 examples [00:00, 194772.01 examples/s]Generating train split: 215011 examples [00:01, 196390.30 examples/s]Generating train split: 236878 examples [00:01, 186988.29 examples/s]Generating train split: 263382 examples [00:01, 190210.30 examples/s]Generating train split: 270679 examples [00:01, 204950.06 examples/s]
+Unable to verify splits sizes.
+07/01/2024 17:35:11 - INFO - datasets.utils.info_utils - Unable to verify splits sizes.
+Dataset json downloaded and prepared to /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a. Subsequent calls will reuse this data.
+07/01/2024 17:35:11 - INFO - datasets.builder - Dataset json downloaded and prepared to /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a. Subsequent calls will reuse this data.
+Process #0 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00000_of_00010.arrow
+07/01/2024 17:35:11 - INFO - datasets.arrow_dataset - Process #0 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00000_of_00010.arrow
+Process #1 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00001_of_00010.arrow
+07/01/2024 17:35:11 - INFO - datasets.arrow_dataset - Process #1 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00001_of_00010.arrow
+Process #2 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00002_of_00010.arrow
+07/01/2024 17:35:11 - INFO - datasets.arrow_dataset - Process #2 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00002_of_00010.arrow
+Process #3 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00003_of_00010.arrow
+07/01/2024 17:35:11 - INFO - datasets.arrow_dataset - Process #3 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00003_of_00010.arrow
+Process #4 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00004_of_00010.arrow
+07/01/2024 17:35:11 - INFO - datasets.arrow_dataset - Process #4 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00004_of_00010.arrow
+Process #5 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00005_of_00010.arrow
+07/01/2024 17:35:11 - INFO - datasets.arrow_dataset - Process #5 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00005_of_00010.arrow
+Process #6 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00006_of_00010.arrow
+07/01/2024 17:35:11 - INFO - datasets.arrow_dataset - Process #6 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00006_of_00010.arrow
+Process #7 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00007_of_00010.arrow
+07/01/2024 17:35:11 - INFO - datasets.arrow_dataset - Process #7 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00007_of_00010.arrow
+Process #8 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00008_of_00010.arrow
+07/01/2024 17:35:11 - INFO - datasets.arrow_dataset - Process #8 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00008_of_00010.arrow
+Process #9 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00009_of_00010.arrow
+07/01/2024 17:35:11 - INFO - datasets.arrow_dataset - Process #9 will write at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00009_of_00010.arrow
+Spawning 10 processes
+07/01/2024 17:35:12 - INFO - datasets.arrow_dataset - Spawning 10 processes
+Tokenizing and reformatting instruction data (num_proc=10):   0%|          | 0/13533 [00:00<?, ? examples/s]Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00000_of_00010.arrow
+07/01/2024 17:35:12 - INFO - datasets.arrow_dataset - Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00000_of_00010.arrow
+Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00001_of_00010.arrow
+07/01/2024 17:35:12 - INFO - datasets.arrow_dataset - Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00001_of_00010.arrow
+Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00002_of_00010.arrow
+07/01/2024 17:35:12 - INFO - datasets.arrow_dataset - Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00002_of_00010.arrow
+Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00003_of_00010.arrow
+07/01/2024 17:35:12 - INFO - datasets.arrow_dataset - Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00003_of_00010.arrow
+Tokenizing and reformatting instruction data (num_proc=10):   0%|          | 26/13533 [00:00<02:03, 109.54 examples/s]Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00004_of_00010.arrow
+07/01/2024 17:35:12 - INFO - datasets.arrow_dataset - Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00004_of_00010.arrow
+Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00006_of_00010.arrow
+07/01/2024 17:35:12 - INFO - datasets.arrow_dataset - Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00006_of_00010.arrow
+Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00005_of_00010.arrow
+07/01/2024 17:35:12 - INFO - datasets.arrow_dataset - Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00005_of_00010.arrow
+Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00007_of_00010.arrow
+07/01/2024 17:35:12 - INFO - datasets.arrow_dataset - Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00007_of_00010.arrow
+Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00008_of_00010.arrow
+07/01/2024 17:35:12 - INFO - datasets.arrow_dataset - Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00008_of_00010.arrow
+Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00009_of_00010.arrow
+07/01/2024 17:35:12 - INFO - datasets.arrow_dataset - Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-a376ad5517678de8_00009_of_00010.arrow
+Tokenizing and reformatting instruction data (num_proc=10):   3%|▎         | 375/13533 [00:00<00:09, 1327.15 examples/s]Tokenizing and reformatting instruction data (num_proc=10):   8%|▊         | 1048/13533 [00:00<00:03, 3134.23 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  13%|█▎        | 1775/13533 [00:00<00:02, 4463.97 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  18%|█▊        | 2500/13533 [00:00<00:02, 5322.93 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  24%|██▍       | 3297/13533 [00:00<00:01, 6036.13 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  30%|██▉       | 4019/13533 [00:00<00:01, 6356.42 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  35%|███▍      | 4700/13533 [00:00<00:01, 6412.45 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  40%|████      | 5452/13533 [00:01<00:01, 6727.62 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  46%|████▌     | 6199/13533 [00:01<00:01, 6931.45 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  51%|█████     | 6914/13533 [00:01<00:00, 6781.60 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  56%|█████▋    | 7628/13533 [00:01<00:00, 6863.50 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  62%|██████▏   | 8363/13533 [00:01<00:00, 6943.31 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  67%|██████▋   | 9107/13533 [00:01<00:00, 7074.34 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  73%|███████▎  | 9837/13533 [00:01<00:00, 6529.10 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  78%|███████▊  | 10531/13533 [00:01<00:00, 6084.99 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  83%|████████▎ | 11207/13533 [00:01<00:00, 6261.24 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  88%|████████▊ | 11911/13533 [00:02<00:00, 6402.43 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  94%|█████████▎| 12661/13533 [00:02<00:00, 6655.96 examples/s]Tokenizing and reformatting instruction data (num_proc=10):  99%|█████████▉| 13373/13533 [00:02<00:00, 6437.26 examples/s]Tokenizing and reformatting instruction data (num_proc=10): 100%|██████████| 13533/13533 [00:02<00:00, 5603.26 examples/s]
+Concatenating 10 shards
+07/01/2024 17:35:14 - INFO - datasets.arrow_dataset - Concatenating 10 shards
+[INFO|configuration_utils.py:739] 2024-07-01 17:35:14,769 >> loading configuration file config.json from cache at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/transformers/models--mistralai--Mistral-7B-v0.1/snapshots/26bca36bde8333b5d7f72e9ed20ccda6a618af24/config.json
+[INFO|configuration_utils.py:802] 2024-07-01 17:35:14,770 >> Model config MistralConfig {
+  "_name_or_path": "mistralai/Mistral-7B-v0.1",
+  "architectures": [
+    "MistralForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "bos_token_id": 1,
+  "eos_token_id": 2,
+  "hidden_act": "silu",
+  "hidden_size": 4096,
+  "initializer_range": 0.02,
+  "intermediate_size": 14336,
+  "max_position_embeddings": 32768,
+  "model_type": "mistral",
+  "num_attention_heads": 32,
+  "num_hidden_layers": 32,
+  "num_key_value_heads": 8,
+  "rms_norm_eps": 1e-05,
+  "rope_theta": 10000.0,
+  "sliding_window": 4096,
+  "tie_word_embeddings": false,
+  "transformers_version": "4.36.2",
+  "use_cache": true,
+  "vocab_size": 32000
+}
+
+[INFO|modeling_utils.py:3344] 2024-07-01 17:35:15,691 >> loading weights file model.safetensors from cache at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/transformers/models--mistralai--Mistral-7B-v0.1/snapshots/26bca36bde8333b5d7f72e9ed20ccda6a618af24/model.safetensors.index.json
+[INFO|configuration_utils.py:826] 2024-07-01 17:35:15,716 >> Generate config GenerationConfig {
+  "bos_token_id": 1,
+  "eos_token_id": 2
+}
+
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.13s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.15it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.10it/s]
+[INFO|modeling_utils.py:4185] 2024-07-01 17:35:17,812 >> All model checkpoint weights were used when initializing MistralForCausalLM.
+
+[INFO|modeling_utils.py:4193] 2024-07-01 17:35:17,812 >> All the weights of MistralForCausalLM were initialized from the model checkpoint at mistralai/Mistral-7B-v0.1.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use MistralForCausalLM for predictions without further training.
+[INFO|configuration_utils.py:781] 2024-07-01 17:35:17,857 >> loading configuration file generation_config.json from cache at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/transformers/models--mistralai--Mistral-7B-v0.1/snapshots/26bca36bde8333b5d7f72e9ed20ccda6a618af24/generation_config.json
+[INFO|configuration_utils.py:826] 2024-07-01 17:35:17,857 >> Generate config GenerationConfig {
+  "bos_token_id": 1,
+  "eos_token_id": 2
+}
+
+[INFO|modeling_utils.py:1813] 2024-07-01 17:35:17,864 >> You are resizing the embedding layer without providing a `pad_to_multiple_of` parameter. This means that the new embedding dimension will be 32001. This might induce some performance reduction as *Tensor Cores* will not be available. For more details about this, or help on choosing the correct value for resizing, refer to this guide: https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html#requirements-tc
+07/01/2024 17:35:21 - INFO - __main__ - Applied LoRA to model.
+trainable params: 109,051,904 || all params: 7,350,792,192 || trainable%: 1.4835394764483094
+Map:   0%|          | 0/13533 [00:00<?, ? examples/s]/projects/illinois/eng/cs/haopeng/qirundai/LESS/less/train/data_arguments.py:50: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  com_len = (torch.tensor(labels) > -1).sum()
+Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-4ed40b6f761ea64d.arrow
+07/01/2024 17:35:21 - INFO - datasets.arrow_dataset - Caching processed dataset at /projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface/datasets/json/default-31e5e754aa58de8e/0.0.0/7483f22a71512872c377524b97484f6d20c275799bb9e7cd8fb3198178d8220a/cache-4ed40b6f761ea64d.arrow
+Map:  15%|█▍        | 2000/13533 [00:00<00:01, 11028.36 examples/s]Map:  30%|██▉       | 4000/13533 [00:00<00:00, 11311.36 examples/s]Map:  44%|████▍     | 6000/13533 [00:00<00:00, 11348.10 examples/s]Map:  59%|█████▉    | 8000/13533 [00:00<00:00, 11442.09 examples/s]Map:  74%|███████▍  | 10000/13533 [00:00<00:00, 11580.17 examples/s]Map:  89%|████████▊ | 12000/13533 [00:01<00:00, 11540.80 examples/s]Map: 100%|██████████| 13533/13533 [00:01<00:00, 11496.21 examples/s]Map: 100%|██████████| 13533/13533 [00:01<00:00, 10307.57 examples/s]
+[train set] examples: 13533; # avg tokens: 363.41278076171875
+[train set] examples: 13533; # avg completion tokens: 104.46707916259766
+07/01/2024 17:35:22 - INFO - __main__ - Sample 6311 of the training set: {'input_ids': tensor([    1,   523, 28766,  1838, 28766, 28767,    13,   657,   456,  3638,
+        28725,   368, 28742,   267,  2078,   264,  2758, 12280, 28725,   264,
+         2996, 28725,   304,  1712,  4372,  2877, 28723,  3604,  3638,   349,
+          298,   604,   396, 16390,  4372,  3551,   298,   272,  2996,   477,
+          272, 10475,  2078, 28723,  1263,   544,  4224, 28725,   865,   624,
+          302,   272,  1712,  4372,  2877,   349,  4714, 28723, 17662,   624,
+          302,   272,   989, 16390,  4372,  2877,   390,   272,  3825, 28723,
+           13,    13, 28824, 28747, 14268, 28747,  2997,  7620,  2887,   354,
+          272,  4150,   304,  7998,   378,   544,  1370,  1043, 28723, 28705,
+           13, 22478, 28747,  1824,  1235,  2997,   927,   298,   511,  1159,
+          456, 28804, 28705,    13, 19641, 28747,   325, 28741, 28731,  2623,
+          264,  4150,  1159,   456,   325, 28760, 28731,  1038,  3282,   325,
+        28743, 28731, 17468,   396, 22504,  1159,   456,    13,    13, 28741,
+        28747,   365,    13,   565,    13, 28824, 28747, 14268, 28747, 17870,
+         8426,   272,  6691,  4968,   438,  2052,   304,   400,  1747,   396,
+         7619, 28723, 28705,    13, 22478, 28747,  1824,   622,   272, 23233,
+          947,   298,   511,  1679, 28804, 28705,    13, 19641, 28747,   325,
+        28741, 28731,   927,  1156,  6691,  5964,   325, 28760, 28731,  2111,
+          713,   272,  7619,   325, 28743, 28731,   704, 14033,  1575,   713,
+           13,    13, 28741, 28747,   334,    13,   565,    13, 28824, 28747,
+        14268, 28747, 23028,  3395, 18486, 16456,   297,   652,  3758,   579,
+          630,  2261, 18486,   298, 16586,   559, 28723, 28705,    13, 22478,
+        28747,  1824,   622, 18486,   947,   298,   511,  1679, 28804, 28705,
+           13, 19641, 28747,   325, 28741, 28731,  2380, 18486,  4716,   325,
+        28760, 28731,   625,  6368,  1679,   325, 28743, 28731,  1721,   582,
+         1679,    13,    13, 28741, 28747,    13, 28789, 28766,   489, 11143,
+        28766, 28767,    13, 28743,    13,   565,     2, 28705,    13]), 'labels': tensor([ -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+         -100,  -100,  -100, 28743,    13,   565,     2, 28705,    13]), 'attention_mask': tensor([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1])}.
+07/01/2024 17:35:22 - INFO - __main__ - trainable model_params: 109051904
+07/01/2024 17:35:22 - INFO - __main__ - dist.is_initialized() and dist.get_rank() == 0
+PeftModelForCausalLM(
+  (base_model): LoraModel(
+    (model): MistralForCausalLM(
+      (model): MistralModel(
+        (embed_tokens): Embedding(32001, 4096)
+        (layers): ModuleList(
+          (0-31): 32 x MistralDecoderLayer(
+            (self_attn): MistralAttention(
+              (q_proj): lora.Linear(
+                (base_layer): Linear(in_features=4096, out_features=4096, bias=False)
+                (lora_dropout): ModuleDict(
+                  (default): Dropout(p=0.1, inplace=False)
+                )
+                (lora_A): ModuleDict(
+                  (default): Linear(in_features=4096, out_features=128, bias=False)
+                )
+                (lora_B): ModuleDict(
+                  (default): Linear(in_features=128, out_features=4096, bias=False)
+                )
+                (lora_embedding_A): ParameterDict()
+                (lora_embedding_B): ParameterDict()
+              )
+              (k_proj): lora.Linear(
+                (base_layer): Linear(in_features=4096, out_features=1024, bias=False)
+                (lora_dropout): ModuleDict(
+                  (default): Dropout(p=0.1, inplace=False)
+                )
+                (lora_A): ModuleDict(
+                  (default): Linear(in_features=4096, out_features=128, bias=False)
+                )
+                (lora_B): ModuleDict(
+                  (default): Linear(in_features=128, out_features=1024, bias=False)
+                )
+                (lora_embedding_A): ParameterDict()
+                (lora_embedding_B): ParameterDict()
+              )
+              (v_proj): lora.Linear(
+                (base_layer): Linear(in_features=4096, out_features=1024, bias=False)
+                (lora_dropout): ModuleDict(
+                  (default): Dropout(p=0.1, inplace=False)
+                )
+                (lora_A): ModuleDict(
+                  (default): Linear(in_features=4096, out_features=128, bias=False)
+                )
+                (lora_B): ModuleDict(
+                  (default): Linear(in_features=128, out_features=1024, bias=False)
+                )
+                (lora_embedding_A): ParameterDict()
+                (lora_embedding_B): ParameterDict()
+              )
+              (o_proj): lora.Linear(
+                (base_layer): Linear(in_features=4096, out_features=4096, bias=False)
+                (lora_dropout): ModuleDict(
+                  (default): Dropout(p=0.1, inplace=False)
+                )
+                (lora_A): ModuleDict(
+                  (default): Linear(in_features=4096, out_features=128, bias=False)
+                )
+                (lora_B): ModuleDict(
+                  (default): Linear(in_features=128, out_features=4096, bias=False)
+                )
+                (lora_embedding_A): ParameterDict()
+                (lora_embedding_B): ParameterDict()
+              )
+              (rotary_emb): MistralRotaryEmbedding()
+            )
+            (mlp): MistralMLP(
+              (gate_proj): Linear(in_features=4096, out_features=14336, bias=False)
+              (up_proj): Linear(in_features=4096, out_features=14336, bias=False)
+              (down_proj): Linear(in_features=14336, out_features=4096, bias=False)
+              (act_fn): SiLU()
+            )
+            (input_layernorm): MistralRMSNorm()
+            (post_attention_layernorm): MistralRMSNorm()
+          )
+        )
+        (norm): MistralRMSNorm()
+      )
+      (lm_head): Linear(in_features=4096, out_features=32001, bias=False)
+    )
+  )
+)
+/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/accelerate/accelerator.py:444: FutureWarning: Passing the following arguments to `Accelerator` is deprecated and will be removed in version 1.0 of Accelerate: dict_keys(['dispatch_batches', 'split_batches']). Please pass an `accelerate.DataLoaderConfiguration` instead: 
+dataloader_config = DataLoaderConfiguration(dispatch_batches=None, split_batches=False)
+  warnings.warn(
+07/01/2024 17:35:22 - WARNING - accelerate.utils.other - Detected kernel version 3.10.0, which is below the recommended minimum of 5.5.0; this can cause the process to hang. It is recommended to upgrade the kernel to the minimum version or higher.
+[INFO|trainer.py:568] 2024-07-01 17:35:36,198 >> Using auto half precision backend
+[INFO|trainer.py:1706] 2024-07-01 17:35:41,433 >> ***** Running training *****
+[INFO|trainer.py:1707] 2024-07-01 17:35:41,433 >>   Num examples = 13,533
+[INFO|trainer.py:1708] 2024-07-01 17:35:41,433 >>   Num Epochs = 4
+[INFO|trainer.py:1709] 2024-07-01 17:35:41,434 >>   Instantaneous batch size per device = 1
+[INFO|trainer.py:1712] 2024-07-01 17:35:41,434 >>   Total train batch size (w. parallel, distributed & accumulation) = 32
+[INFO|trainer.py:1713] 2024-07-01 17:35:41,434 >>   Gradient Accumulation steps = 32
+[INFO|trainer.py:1714] 2024-07-01 17:35:41,434 >>   Total optimization steps = 1,688
+[INFO|trainer.py:1715] 2024-07-01 17:35:41,436 >>   Number of trainable parameters = 109,051,904
+[INFO|integration_utils.py:722] 2024-07-01 17:35:41,438 >> Automatic Weights & Biases logging enabled, to disable set os.environ["WANDB_DISABLED"] = "true"
+wandb: Currently logged in as: qirundai (raidriar_dai). Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.17.3
+wandb: Run data is saved locally in /projects/illinois/eng/cs/haopeng/qirundai/LESS/wandb/run-20240701_173545-mw9l5xmr
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run glamorous-wave-3
+wandb: ⭐️ View project at https://wandb.ai/raidriar_dai/LESS_Reproduce
+wandb: 🚀 View run at https://wandb.ai/raidriar_dai/LESS_Reproduce/runs/mw9l5xmr
+  0%|          | 0/1688 [00:00<?, ?it/s][WARNING|logging.py:314] 2024-07-01 17:35:53,550 >> You're using a LlamaTokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/projects/illinois/eng/cs/haopeng/qirundai/LESS/less/train/train.py", line 233, in <module>
+    main()
+  File "/projects/illinois/eng/cs/haopeng/qirundai/LESS/less/train/train.py", line 179, in main
+    train_result = trainer.train()
+                   ^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/transformers/trainer.py", line 1537, in train
+    return inner_training_loop(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/transformers/trainer.py", line 1854, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/transformers/trainer.py", line 2735, in training_step
+    loss = self.compute_loss(model, inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/transformers/trainer.py", line 2758, in compute_loss
+    outputs = model(**inputs)
+              ^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py", line 839, in forward
+    output = self._fsdp_wrapped_module(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/accelerate/utils/operations.py", line 822, in forward
+    return model_forward(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/accelerate/utils/operations.py", line 810, in __call__
+    return convert_to_fp32(self.model_forward(*args, **kwargs))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/amp/autocast_mode.py", line 16, in decorate_autocast
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/peft/peft_model.py", line 1073, in forward
+    return self.base_model(
+           ^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/peft/tuners/tuners_utils.py", line 103, in forward
+    return self.model.forward(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/transformers/models/mistral/modeling_mistral.py", line 1053, in forward
+    outputs = self.model(
+              ^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/transformers/models/mistral/modeling_mistral.py", line 938, in forward
+    layer_outputs = decoder_layer(
+                    ^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py", line 839, in forward
+    output = self._fsdp_wrapped_module(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/transformers/models/mistral/modeling_mistral.py", line 663, in forward
+    hidden_states, self_attn_weights, present_key_value = self.self_attn(
+                                                          ^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/transformers/models/mistral/modeling_mistral.py", line 257, in forward
+    value_states = self.v_proj(hidden_states)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/peft/tuners/lora/layer.py", line 373, in forward
+    result += lora_B(lora_A(dropout(x))) * scaling
+                            ^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/modules/dropout.py", line 58, in forward
+    return F.dropout(input, self.p, self.training, self.inplace)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/nn/functional.py", line 1266, in dropout
+    return _VF.dropout_(input, p, training) if inplace else _VF.dropout(input, p, training)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 14.00 MiB. GPU 0 has a total capacty of 79.10 GiB of which 10.00 MiB is free. Including non-PyTorch memory, this process has 79.08 GiB memory in use. Of the allocated memory 77.67 GiB is allocated by PyTorch, and 481.87 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+wandb: - 0.021 MB of 0.021 MB uploadedwandb: \ 0.021 MB of 0.048 MB uploadedwandb: 🚀 View run glamorous-wave-3 at: https://wandb.ai/raidriar_dai/LESS_Reproduce/runs/mw9l5xmr
+wandb: ⭐️ View project at: https://wandb.ai/raidriar_dai/LESS_Reproduce
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20240701_173545-mw9l5xmr/logs
+wandb: WARNING The new W&B backend becomes opt-out in version 0.18.0; try it out with `wandb.require("core")`! See https://wandb.me/wandb-core for more information.
+[2024-07-01 17:36:07,003] torch.distributed.elastic.multiprocessing.api: [ERROR] failed (exitcode: 1) local_rank: 0 (pid: 178291) of binary: /projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/bin/python
+Traceback (most recent call last):
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 346, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/distributed/run.py", line 806, in main
+    run(args)
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/distributed/run.py", line 797, in run
+    elastic_launch(
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/distributed/launcher/api.py", line 134, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/illinois/eng/cs/haopeng/qirundai/anaconda3/envs/less/lib/python3.11/site-packages/torch/distributed/launcher/api.py", line 264, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+less.train.train FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2024-07-01_17:36:07
+  host      : ccc0422.campuscluster.illinois.edu
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 178291)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
