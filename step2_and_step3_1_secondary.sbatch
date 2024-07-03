@@ -6,9 +6,9 @@
 #SBATCH --ntasks-per-node=1                 # Number of task (cores/ppn) per node
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=96G
-#SBATCH --job-name=step2_and_step3_1_llama2_7b_bsz32_remaining_3          # Name of batch job
-#SBATCH --output=step2_and_step3_1_llama2_7b_bsz32_remaining_3.o%j        # Name of batch job output file
-##SBATCH --error=step2_and_step3_1_llama2_7b_bsz32_remaining_3.e%j        # Name of batch job error file
+#SBATCH --job-name=step2_and_step3_1_llama2_7b_bsz32_remaining_4          # Name of batch job
+#SBATCH --output=step2_and_step3_1_llama2_7b_bsz32_remaining_4.o%j        # Name of batch job output file
+##SBATCH --error=step2_and_step3_1_llama2_7b_bsz32_remaining_4.e%j        # Name of batch job error file
 #SBATCH --mail-user=qirundai@illinois.edu  # Send email notifications
 #SBATCH --mail-type=BEGIN,END              # Type of email notifications to send
 
@@ -21,4 +21,5 @@ conda activate less                     # Activate your specific Conda environme
 
 
 # User scripting: any number of any Linux command (python/shell, etc.) can be executed here
-./step2_remaining.sh
+./step2_remaining_secondary.sh
+./step3_1.sh
