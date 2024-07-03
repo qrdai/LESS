@@ -166,7 +166,7 @@ def collect_grads(dataloader,
     save_interval = 160  # save every 160 batches
 
     def _project(current_full_grads, projected_grads):
-        current_full_grads = torch.stack(current_full_grads).to(torch.float16)
+        current_full_grads = torch.stack(current_full_grads).to(torch.float16)  # torch.stack will create a new dimension
         for i, projector in enumerate(projectors):
             current_projected_grads = projector.project(
                 current_full_grads, model_id=model_id)
@@ -183,7 +183,7 @@ def collect_grads(dataloader,
             torch.save(projected_grads[dim], outfile)
             print(
                 f"Saving {outfile}, {projected_grads[dim].shape}", flush=True)
-            projected_grads[dim] = []
+            projected_grads[dim] = []   # `full_grads` is cleared in the main loop, while `projected_grads` is cleared inside `_save`
 
     device = next(model.parameters()).device
     dtype = next(model.parameters()).dtype
@@ -226,6 +226,10 @@ def collect_grads(dataloader,
     # max index for each dimension -> to resume calculation from where you stop last time
     max_index = min(get_max_saved_index(
         output_dirs[dim], "grads") for dim in proj_dim)
+    # max_index = 31520   # to start from an arbitary resume, instead of always from the max index
+    # # DEBUG 1
+    # print(f"MAX_INDEX: {max_index}")
+    # return
 
     # projected_gradients
     full_grads = []  # full gradients
@@ -235,7 +239,7 @@ def collect_grads(dataloader,
         prepare_batch(batch)
         count += 1
 
-        if count <= max_index:
+        if count <= max_index:  # if count != max_index
             print("skipping count", count)
             continue
 

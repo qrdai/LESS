@@ -11,13 +11,21 @@ if [[ ! -d $output_dir ]]; then
     mkdir -p $output_dir
 fi
 
-# use fsdp for large models
-if [[ $model_path == "meta-llama/Llama-2-13b-hf" ]]; then
-    base_training_args="$base_training_args --fsdp 'full_shard auto_wrap' --fsdp_config llama2_13b_finetune"
-    elif [[ $model_path == "mistralai/Mistral-7B-v0.1" ]]; then
+# # use fsdp for large models
+# if [[ $model_path == "meta-llama/Llama-2-13b-hf" ]]; then
+#     base_training_args="$base_training_args --fsdp 'full_shard auto_wrap' --fsdp_config llama2_13b_finetune"
+#     elif [[ $model_path == "mistralai/Mistral-7B-v0.1" ]]; then
+#     base_training_args="$base_training_args --fsdp 'full_shard auto_wrap' --fsdp_config mistral_7b_finetune"
+# fi
+
+# use fsdp for all types of models, in order to obtain `optimizer.bin` with str-based keys
+if [[ $model_path == *"llama"* ]]; then
+    base_training_args="$base_training_args --fsdp 'full_shard auto_wrap' --fsdp_config llama_finetune"
+elif [[ $model_path == *"mistral"* ]]; then
     base_training_args="$base_training_args --fsdp 'full_shard auto_wrap' --fsdp_config mistral_7b_finetune"
 fi
 
+# percentage default to 1.0, data_seed default to 0
 training_args="$base_training_args \
 --model_name_or_path $model_path \
 --output_dir $output_dir \

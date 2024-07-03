@@ -10,7 +10,7 @@ def parse_args():
     argparser.add_argument('--train_file_names', type=str,
                            nargs='+', help='The path to the score file')
     argparser.add_argument('--train_files', type=str, nargs='+',
-                           help='The path of the training file that corresponds to the score file')
+                           help='The path to the training data file that corresponds to the score file')
     argparser.add_argument('--target_task_names', type=str,
                            nargs='+', help='The name of the target task')
     argparser.add_argument('--output_path', type=str,
@@ -45,36 +45,37 @@ if __name__ == "__main__":
 
         score_paths = [os.path.join(
             output_path, f"{task_name}_influence_score.pt") for task_name in args.train_file_names]
-        num_samples = []
+        num_samples = []    # [x1, x2, x3, x4]
         for score_path in score_paths:
             num_samples.append(
                 len(torch.load(score_path, map_location=device)))
-        cumsum_num_samples = torch.cumsum(torch.tensor(num_samples), dim=0)
+        cumsum_num_samples = torch.cumsum(torch.tensor(num_samples), dim=0) # [x1, x1+x2, x1+x2+x3, x1+x2+x3+x4]
 
-        total_samples = sum(num_samples)
+        total_samples = sum(num_samples)    # x1+x2+x3+x4
         if args.percentage is not None:
             args.max_samples = int(args.percentage * total_samples)
             data_amount_name = f"p{args.percentage}"
         else:
             data_amount_name = f"num{args.max_samples}"
 
-        all_scores = []
+        all_scores = [] # [tensor1, tensor2, tensor3, tensor4]
         for score_path, train_file in zip(score_paths, args.train_files):
             score = torch.load(score_path, map_location=device)
             all_scores.append(score)
-        all_scores = torch.cat(all_scores, dim=0)
+        all_scores = torch.cat(all_scores, dim=0)   # [tensor1 | tensor2 | tensor3 | tensor4]
 
         # sort the scores and output the corresponding data index
+        # the goal is to select data points that have highest influence among ALL FOUR training sets
         file_specific_index = torch.cat(
-            [torch.arange(line_num) for line_num in num_samples]).to(device)
+            [torch.arange(line_num) for line_num in num_samples]).to(device)    # [0,1,...x1-1, 0,1,...x2-1, ...]
         data_from = torch.cat([torch.ones(line_num, dtype=torch.long)
-                              * i for i, line_num in enumerate(num_samples)]).to(device)
+                              * i for i, line_num in enumerate(num_samples)]).to(device)    # [0,0,...0, 1,1,...1, ...]
         sorted_scores, sorted_index = torch.sort(
             all_scores, dim=0, descending=True)
         sorted_score_file = os.path.join(output_path, f"sorted.csv")
 
         data_from = data_from[sorted_index]
-        sorted_index = file_specific_index[sorted_index]
+        sorted_index = file_specific_index[sorted_index]    # convert global index to file-specific index
 
         if not os.path.exists(sorted_score_file):
             with open(sorted_score_file, 'w', encoding='utf-8') as file:
@@ -89,7 +90,7 @@ if __name__ == "__main__":
         all_lines = []
         for i, train_file in enumerate(args.train_files):
             with open(train_file, 'r', encoding='utf-8', errors='ignore') as file:
-                all_lines.append(file.readlines()[:num_samples[i]])
+                all_lines.append(file.readlines()[:num_samples[i]]) # [ [x1 samples from 0], [x2 samples from 1], ...], where each sample is a jsonl dict
 
         final_index_list = sorted_index[:args.max_samples].tolist()
         final_data_from = data_from[:args.max_samples].tolist()
