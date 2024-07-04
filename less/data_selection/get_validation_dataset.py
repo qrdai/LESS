@@ -105,6 +105,8 @@ def get_bbh_dataset(data_dir: str,
                 string += "\n\n"
             return string
 
+        # all 3 examples in each task will be encoded one by one, with the other two serving as context each time
+        # so for bbh "There are 81 examples in the dataset"
         for i in range(len(exes)):
             target_ex = exes[i]
             other_exes = exes[:i] + exes[i+1:]
@@ -183,7 +185,7 @@ def get_tydiqa_dataset(data_dir: str,
                 "根据所给文章中的信息回答以下问题。", "文章:", "问题:", "答案:")
 
     file_name = "tydiqa-one-shot-zh.json" if zh else "tydiqa-one-shot.json"
-    file = os.path.join(f"{data_dir}/eval/tydiqa", file_name)
+    file = os.path.join(f"{data_dir}/eval/tydiqa/dev", file_name)   # add subdir `dev`
 
     examples = json.load(open(file, "r"))
     dataset = {"input_ids": [], "attention_mask": [], "labels": []}
