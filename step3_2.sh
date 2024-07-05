@@ -3,7 +3,8 @@
 # So we need extra operations to recover the influence score for EACH subtask
 
 TRAIN_FILE_NAMES="cot dolly flan_v2 oasst1" # training point gradients calculated in step2
-TARGET_TASK_NAMES="mmlu"    # validation point gradients calculated in step3-1
+TARGET_TASK_NAMES="mmlu bbh tydiqa" # validation point gradients calculated in step3-1
+# TARGET_TASK_NAMES="tydiqa"
 DIM=8192                    # decide which dimension to use
 
 CKPTS="422 845 1268 1688"   # original 4 datasets-p0.05-bsz32

@@ -118,9 +118,10 @@ def obtain_gradients_with_adam(model, batch, avg, avg_sq):
     loss.backward() # must forward and backprop to get each batch of loss grad 
 
     vectorized_grads = torch.cat(
-        [p.grad.view(-1) for n, p in model.named_parameters() if p.grad is not None])
+        [p.grad.view(-1) for n, p in model.named_parameters() if p.grad is not None])   # since already backward above, all the params of lora layers should have p.grad != None
+    # after using torch.cat([...], dim=0 by default), `vectorized_grads` is already flattened
 
-    updated_avg = beta1 * avg + (1 - beta1) * vectorized_grads
+    updated_avg = beta1 * avg + (1 - beta1) * vectorized_grads  # implicitly validates that len(avg) == len(vectorized_grads)
     updated_avg_sq = beta2 * avg_sq + (1 - beta2) * vectorized_grads ** 2
     vectorized_grads = updated_avg / torch.sqrt(updated_avg_sq + eps)
 

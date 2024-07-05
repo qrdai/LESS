@@ -38,10 +38,10 @@ def tokenize(tokenizer: PreTrainedTokenizerBase,
         print("******** Example ends ********")
 
     prompt_input_ids = torch.tensor(
-        tokenizer.encode(query, max_length=max_length))
+        tokenizer.encode(query, max_length=max_length, truncation=True))
     full_input_ids = torch.tensor(
-        tokenizer.encode(full_prompt, max_length=max_length))
-    labels = torch.tensor(tokenizer.encode(full_prompt, max_length=max_length))
+        tokenizer.encode(full_prompt, max_length=max_length, truncation=True))
+    labels = torch.tensor(tokenizer.encode(full_prompt, max_length=max_length, truncation=True)) # originally `truncation` unset in tokenizer.encode; but doesn't matter as long as `max_length` is set: `truncation` will be default to 'longest_first'
 
     # attn_mask should retain full_prompt: query + completion, since model always needs to see query to understand the whole instruction pair
     # labels should mask loss on query and only expose completion, since we always "train on completion only"

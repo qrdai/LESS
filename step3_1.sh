@@ -4,6 +4,7 @@ DIMS="8192" # We use 8192 as our default projection dimension
 
 CKPT_list=("422" "845" "1268" "1688") # original 4 datasets-p0.05-bsz32
 task_list=("mmlu" "bbh" "tydiqa")
+# task_list=("tydiqa")
 
 REFERENCE_MODEL=Llama-2-7b-p0.05-lora-seed3-bsz32
 
