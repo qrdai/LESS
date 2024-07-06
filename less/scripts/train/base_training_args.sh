@@ -1,8 +1,9 @@
 #!/bin/bash
 
 ID=$RANDOM
-# --nproc_per_node=2 for larger model such as mistral-7B
+PORT=$((29000 + ID % 1000))  # This generates a port number between 29000 and 29999
 export header="torchrun --nproc_per_node 1 --nnodes 1 \
+--rdzv-endpoint=localhost:$PORT \
 --rdzv-id=$ID --rdzv_backend c10d \
 -m less.train.train"
 
