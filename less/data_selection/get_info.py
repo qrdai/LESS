@@ -20,7 +20,7 @@ from less.data_selection.get_validation_dataset import (get_dataloader,
 
 hf_home = "/projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface"
 os.environ['HF_HOME'] = hf_home
-model_cache_dir = f"{hf_home}/transformers" # `cache_dir` arg for .from_pretrained()
+model_cache_dir = f"{hf_home}/transformers" # `cache_dir` arg for .from_pretrained() -> not needed in this file, since all models are loaded from local files trained in step 1
 # os.environ["CUDA_VISIBLE_DEVICES"]="0"  # place the model on only one GPU; otherwise error: tensors on different devices
 
 
@@ -41,25 +41,24 @@ def load_model(model_name_or_path: str,
         model_name_or_path, "adapter_config.json"))
     if is_peft:
         # load this way to make sure that optimizer states match the model structure
-        config = LoraConfig.from_pretrained(model_name_or_path, cache_dir=model_cache_dir)
+        config = LoraConfig.from_pretrained(model_name_or_path) # no need for `cache_dir=model_cache_dir` here, since directly load from `model_name_or_path` (though adding `cache_dir` won't affect the loading of `model_name_or_path` from /out, since the former will be overruled by the latter)
+        # also, `LoraConfig.from_pretrained` requires `adapter_config.json` to be present in `model_name_or_path` or the huggingface repo, but the cached `meta-llama/Llama-2-7b-hf` doesn't contain that
         base_model = AutoModelForCausalLM.from_pretrained(
             config.base_model_name_or_path, 
             torch_dtype=torch_dtype, 
             device_map="auto",
-            cache_dir=model_cache_dir
+            cache_dir=model_cache_dir   # only needs to be added here since `config.base_model_name_or_path` is the cached pretrained model downloaded from hf repo
         )
         model = PeftModel.from_pretrained(
             base_model, 
-            model_name_or_path, 
-            device_map="auto",
-            cache_dir=model_cache_dir
+            model_name_or_path, # still load `adapter_config.json` from this path 
+            device_map="auto"
         )
     else:
         model = AutoModelForCausalLM.from_pretrained(
             model_name_or_path, 
             torch_dtype=torch_dtype, 
-            device_map="auto",
-            cache_dir=model_cache_dir
+            device_map="auto"
         )
 
     for name, param in model.named_parameters():
@@ -117,7 +116,7 @@ args = parser.parse_args()
 assert args.task is not None or args.train_file is not None
 
 
-tokenizer = AutoTokenizer.from_pretrained(args.model_path, cache_dir=model_cache_dir)
+tokenizer = AutoTokenizer.from_pretrained(args.model_path)
 dtype = torch.float16 if args.torch_dtype == "float16" else torch.bfloat16
 model = load_model(args.model_path, dtype)
 

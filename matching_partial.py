@@ -102,12 +102,17 @@ for target_task_name in args.target_task_names:
 
         elif args.mode == "selected_data":
             # Training Point Selection: get the column-max influence scores
-            influence_score = influence_score.reshape(
-                influence_score.shape[0], N_SUBTASKS[target_task_name], -1
-            ).mean(-1).max(-1)[0] # first take an average over all eval points inside each subtask; then pick the max influence score over all subtasks as the final influence
+            # if target_task_name == "tydiqa", then return the info scores for the 8th/9 column: korean
+            if target_task_name == "tydiqa":
+                influence_score = influence_score[:, -2]
+            else:
+                influence_score = influence_score.reshape(
+                    influence_score.shape[0], N_SUBTASKS[target_task_name], -1
+                ).mean(-1).max(-1)[0] # first take an average over all eval points inside each subtask; then pick the max influence score over all subtasks as the final influence
+
             assert influence_score.shape == torch.Size([N_TRAINSETS[train_file_name]]), f"{influence_score.shape}"
-            output_file = os.path.join(output_dir, f"{train_file_name}_influence_score.pt")
-            print("Saved influence score to {}".format(output_file))
+            output_file = os.path.join(output_dir, f"{train_file_name}_partial_influence_score.pt")
+            print("Saved **Partial** influence score to {}".format(output_file))
 
         else:
             raise NotImplementedError

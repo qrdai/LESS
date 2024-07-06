@@ -2,7 +2,9 @@
 
 TARGET_TASK_NAME="mmlu"
 PERCENTAGE=0.05
-TRAIN_FILES=../selected_data/${TARGET_TASK_NAME}/top_p${PERCENTAGE}.jsonl
+REFERENCE_MODEL=Llama-2-7b-p0.05-lora-seed3-bsz32
+
+TRAIN_FILES=../selected_data/${REFERENCE_MODEL}/${TARGET_TASK_NAME}/top_p${PERCENTAGE}.jsonl
 
 MODEL_PATH=meta-llama/Llama-2-7b-hf
 # MODEL_PATH=mistralai/Mistral-7B-v0.1
