@@ -3,7 +3,7 @@ This file is copied and modified from https://gist.github.com/neubig/80de662fb3e
 Thanks to Graham Neubig for sharing the original code.
 '''
 
-import openai
+# import openai # won't be used in run_eval.py
 import asyncio
 from typing import Any, List, Dict
 

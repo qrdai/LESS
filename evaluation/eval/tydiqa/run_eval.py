@@ -6,7 +6,7 @@ import random
 import evaluate
 import numpy as np
 import torch
-import vllm
+# import vllm
 
 from eval.utils import (dynamic_import_function, generate_completions,
                         load_hf_lm_and_tokenizer, query_openai_chat_model)

@@ -208,7 +208,7 @@ def load_hf_lm_and_tokenizer(
         model_name_or_path = peft_config.base_model_name_or_path
         
     if gptq_model:
-        from auto_gptq import AutoGPTQForCausalLM
+        from auto_gptq import AutoGPTQForCausalLM   # should not throw error as long as not executed
         model_wrapper = AutoGPTQForCausalLM.from_quantized(
             model_name_or_path, device="cuda:0", use_triton=True
         )
