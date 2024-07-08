@@ -37,12 +37,13 @@ encoding_templates_without_context = {
 
 
 def main(args):
-    random.seed(42)
+    # random.seed(42)
+    random.seed(args.eval_seed)
 
     print("Loading data...")
 
     test_data = []
-    with open(os.path.join(args.data_dir, "tydiqa-goldp-v1.1-dev.json")) as fin:
+    with open(os.path.join(args.data_dir, "test", "tydiqa-goldp-v1.1-dev.json")) as fin:
         dev_data = json.load(fin)
         for article in dev_data["data"]:
             for paragraph in article["paragraphs"]:
@@ -72,7 +73,7 @@ def main(args):
 
     if args.n_shot > 0:
         train_data_for_langs = {lang: [] for lang in data_languages}
-        with open(os.path.join(args.data_dir, "tydiqa-goldp-v1.1-train.json")) as fin:
+        with open(os.path.join(args.data_dir, "dev", "tydiqa-goldp-v1.1-train.json")) as fin:
             train_data = json.load(fin)
             for article in train_data["data"]:
                 for paragraph in article["paragraphs"]:
@@ -153,7 +154,7 @@ def main(args):
             prompt, q_template, a_template = encoding_templates_without_context[lang]
             p_template = ""
         else:
-            prompt, p_template, q_template, a_template = encoding_templates_with_context[lang]
+            prompt, p_template, q_template, a_template = encoding_templates_with_context[lang]  # p: paragraph; q: question; a: answer
 
         prompt += "\n\n"
 
@@ -207,16 +208,15 @@ def main(args):
             outputs = [prompt_to_output[prompt].strip(
             ) if prompt in prompt_to_output else "" for prompt in prompts]
         else:
-            # get the last token because the tokenizer may add space tokens at the start.
-            new_line_token = tokenizer.encode(
-                "\n", add_special_tokens=False)[-1]
+            # get the last token ([-1]) because the tokenizer may add space tokens at the start.
+            new_line_token = tokenizer.encode("\n", add_special_tokens=False)[-1]
             outputs = generate_completions(
                 model=model,
                 tokenizer=tokenizer,
                 prompts=prompts,
                 max_new_tokens=50,
                 batch_size=args.eval_batch_size,
-                stop_id_sequences=[[new_line_token]]
+                stop_id_sequences=[[new_line_token]]    # `[new_line_token]` is considered as a sequence
             )
             # remove unnecessary space
             outputs = [output.strip() for output in outputs]
@@ -233,10 +233,15 @@ def main(args):
         outputs = [result["output"].strip().split("\n")[0].strip()
                    for result in results]
 
-    with open(os.path.join(args.save_dir, "tydiaqa_predictions.jsonl"), "w") as fout:
+    # with open(os.path.join(args.save_dir, "tydiaqa_predictions.jsonl"), "w") as fout:
+    #     for example, output in zip(test_data, outputs):
+    #         example["prediction_text"] = output
+    #         fout.write(json.dumps(example) + "\n")
+
+    with open(os.path.join(args.save_dir, "tydiaqa_predictions.json"), "w") as fout:
         for example, output in zip(test_data, outputs):
             example["prediction_text"] = output
-            fout.write(json.dumps(example) + "\n")
+        json.dump(test_data, fout, indent=4)
 
     print("Calculating F1, EM ...")
     metric = evaluate.load("squad")
@@ -247,11 +252,9 @@ def main(args):
                             for example, output in zip(test_data, outputs) if example["lang"] == lang]
         lang_references = [{"id": example["id"], "answers": example["answers"]}
                            for example in test_data if example["lang"] == lang]
-        eval_scores[lang] = metric.compute(
-            predictions=lang_predictions, references=lang_references)
+        eval_scores[lang] = metric.compute(predictions=lang_predictions, references=lang_references)
 
-    eval_scores["average"] = {metric: np.mean(
-        [scores[metric] for scores in eval_scores.values()]) for metric in ["f1", "exact_match"]}
+    eval_scores["average"] = {metric: np.mean([scores[metric] for scores in eval_scores.values()]) for metric in ["f1", "exact_match"]}
 
     print("Scores:")
     print(json.dumps(eval_scores, indent=4))
@@ -364,9 +367,23 @@ if __name__ == "__main__":
     parser.add_argument(
         "--eval_valid",
         action="store_true",
-        help="If given, we will use gpu for inference.")
+        help="If given, we will use gpu for inference."
+    )
+    parser.add_argument(
+        "--eval_seed",
+        type=int,
+        default=42,
+    )
+
     args = parser.parse_args()
+
     # model_name_or_path and openai_engine cannot be both None or both not None.
     assert (args.model_name_or_path is None) != (
         args.openai_engine is None), "Either model_name_or_path or openai_engine should be specified."
+
+    # add prefix to model_name_or_path and tokenizer_name_or_path
+    base_path = "/projects/illinois/eng/cs/haopeng/qirundai"
+    args.model_name_or_path = f"{base_path}/out/{args.model_name_or_path}"
+    args.tokenizer_name_or_path = args.model_name_or_path
+
     main(args)

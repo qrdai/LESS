@@ -14,7 +14,7 @@ from eval.mmlu.categories import categories, subcategories
 from eval.utils import (dynamic_import_function, get_next_word_predictions,
                         load_hf_lm_and_tokenizer, query_openai_chat_model)
 
-choices = ["A", "B", "C", "D"]
+choices = ["A", "B", "C", "D"]  # correspond to indices 0,1,2,3
 
 
 def format_subject(subject):
@@ -43,7 +43,7 @@ def gen_prompt(train_df, subject, k=-1):
     if k == -1:
         k = train_df.shape[0]
     for i in range(k):
-        prompt += format_example(train_df, i)
+        prompt += format_example(train_df, i)   # include_answer default to True
     return prompt
 
 
@@ -53,9 +53,13 @@ def eval_hf_model(args, subject, model, tokenizer, dev_df, test_df, batch_size=1
     chat_formatting_function = dynamic_import_function(
         args.chat_formatting_function) if args.use_chat_format else None
     for i in range(0, test_df.shape[0]):
-        prompt_end = format_example(test_df, i, include_answer=False)
-        train_prompt = gen_prompt(dev_df, subject, k)
+        prompt_end = format_example(test_df, i, include_answer=False)   # test question from test_df
+        train_prompt = gen_prompt(dev_df, subject, k)   # few-shot examples from dev_df
         prompt = train_prompt + prompt_end
+
+        # if i == 0:
+        #     print(f"Few-shot examples:\n\n{train_prompt}\n")
+        # print(f"Test set Question {i+1}:\n{prompt_end}\n")
 
         if args.use_chat_format:
             messages = [{"role": "user", "content": prompt}]
@@ -64,10 +68,10 @@ def eval_hf_model(args, subject, model, tokenizer, dev_df, test_df, batch_size=1
                 prompt += "The answer is:"
             else:
                 prompt += " The answer is:"
-        
+
         tokenized_prompt = tokenizer(
             prompt, truncation=False, add_special_tokens=False).input_ids
-        # make sure every prompt is less than 2048 tokens
+        # make sure every prompt is less than 2048 tokens, by iteratively deleting few-shot examples
         while len(tokenized_prompt) > 2048:
             k -= 1
             train_prompt = gen_prompt(dev_df, subject, k)
@@ -83,7 +87,8 @@ def eval_hf_model(args, subject, model, tokenizer, dev_df, test_df, batch_size=1
 
             tokenized_prompt = tokenizer(
                 prompt, truncation=False, add_special_tokens=False).input_ids
-        prompts.append(prompt)
+
+        prompts.append(prompt) # len(prompts) == test_df.shape[0], storing prompts for all test questions
 
     # get the answer for all examples
     # adding a prefix space here, as that's expected from the prompt
@@ -97,13 +102,18 @@ def eval_hf_model(args, subject, model, tokenizer, dev_df, test_df, batch_size=1
     # get the metrics
     cors = []
     groud_truths = test_df.iloc[:, -1].values
+
+    print(f"\nSubject {subject} - Pred & GT:\n")
+    print(f"pred_indices:\n{pred_indices}\n")
+    print(f"groud_truths:\n{groud_truths}\n")
+
     for i in range(len(pred_indices)):
         prediction = choices[pred_indices[i]]
         ground_truth = groud_truths[i]
         cors.append(prediction == ground_truth)
 
     acc = np.mean(cors)
-    cors = np.array(cors)
+    cors = np.array(cors)   # [0,1,1,0,0,1, ...] arranged in the same order as `test_df`
 
     all_probs = np.array(all_probs)
     print("Average accuracy {:.3f} - {}".format(acc, subject))
@@ -159,16 +169,16 @@ def eval_openai_chat_engine(args, subject, engine, dev_df, test_df, batch_size=1
 def main(args):
 
     if args.model_name_or_path:
-        print("Loading model and tokenizer...")
+        print(f"Loading model and tokenizer from {args.model_name_or_path}")
         model, tokenizer = load_hf_lm_and_tokenizer(
             model_name_or_path=args.model_name_or_path,
             tokenizer_name_or_path=args.tokenizer_name_or_path,
-            load_in_8bit=args.load_in_8bit,
+            load_in_8bit=args.load_in_8bit, # False
             device_map="balanced_low_0" if torch.cuda.device_count() > 1 else "auto",
-            gptq_model=args.gptq,
-            use_fast_tokenizer=not args.use_slow_tokenizer,
-            convert_to_bf16=args.convert_to_bf16,
-            convert_to_half=args.convert_to_half,
+            gptq_model=args.gptq,   # False
+            use_fast_tokenizer=not args.use_slow_tokenizer, # False
+            convert_to_bf16=args.convert_to_bf16,   # True
+            convert_to_half=args.convert_to_half,   # False
         )
 
     subjects = sorted(
@@ -179,7 +189,7 @@ def main(args):
         ]
     )
 
-    if args.subjects:
+    if args.subjects:   # loaded as a list; can include only part of all the 57 mmlu tasks
         assert all(
             subj in subjects for subj in args.subjects), f"Some of the subjects you specified are not valid: {args.subjects}"
         subjects = args.subjects
@@ -191,21 +201,23 @@ def main(args):
     subcat_cors = {
         subcat: [] for subcat_lists in subcategories.values() for subcat in subcat_lists
     }
-    cat_cors = {cat: [] for cat in categories}
+    cat_cors = {cat: [] for cat in categories}  # cat in ["STEM", "humanities", "social sciences", "other (business, health, misc.)"]
 
     for subject in tqdm(subjects, desc=f"Evaluating subjects: "):
 
         dev_df = pd.read_csv(
             os.path.join(args.data_dir, "dev", subject + "_dev.csv"), header=None
-        )[: args.ntrain]
+        )[: args.ntrain]    # args.ntrain: # of few-shot examples
         test_df = pd.read_csv(
             os.path.join(args.data_dir, "test", subject + "_test.csv"), header=None
         )
-        if args.n_instances and args.n_instances < test_df.shape[0]:
-            test_df = test_df.sample(args.n_instances, random_state=42)
+        if args.n_instances and args.n_instances < test_df.shape[0]:    # args.n_instances: max # of test questions
+            # test_df = test_df.sample(args.n_instances, random_state=42) # random_seed for test data subsampling fixed to 42
+            test_df = test_df.head(args.n_instances)
+            # print(test_df)
 
         if args.model_name_or_path:
-            if args.eval_valid:
+            if args.eval_valid: # evaluate the validation set, which is not supported yet
                 test_df = dev_df
             
             cors, acc, probs = eval_hf_model(
@@ -214,16 +226,20 @@ def main(args):
             cors, acc, probs = eval_openai_chat_engine(
                 args, subject, args.openai_engine, dev_df, test_df, args.eval_batch_size)
 
+        print(f"\nSubject {subject} - Cors and Probs:\n")
+        print(f"cors:\n{cors}\n")
+        print(f"probs:\n{probs}\n")
+
         subcats = subcategories[subject]
         for subcat in subcats:
-            subcat_cors[subcat].append(cors)
+            subcat_cors[subcat].append(cors)    # subcat_cors[subcat]: [[0,1,0,...], [1,0,1,...], ...  ]
             for key in categories.keys():
                 if subcat in categories[key]:
-                    cat_cors[key].append(cors)
-        all_cors.append(cors)
+                    cat_cors[key].append(cors)  # cat_cors[key]: [[0,1,0,...], [1,0,1,...], ...  ]
+        all_cors.append(cors)   # all_cors: [[0,1,0,...], [1,0,1,...], ...  ]
 
-        test_df["correct"] = cors
-        for j in range(probs.shape[1]):
+        test_df["correct"] = cors   # test_df and cors both point to the same subject
+        for j in range(probs.shape[1]): # probs.shape[1] == 4
             choice = choices[j]
             test_df["choice{}_probs".format(choice)] = probs[:, j]
         test_df.to_csv(
@@ -233,11 +249,17 @@ def main(args):
             index=None,
         )
 
+    # print(f"subcat_cors:\n{subcat_cors}\n")
     for subcat in subcat_cors:
+        if subcat_cors[subcat] == []:
+            continue
+        # print(f"subcat:\n{subcat}\n")
         subcat_acc = np.mean(np.concatenate(subcat_cors[subcat]))
         print("Average accuracy {:.3f} - {}".format(subcat_acc, subcat))
 
     for cat in cat_cors:
+        if cat_cors[cat] == []:
+            continue
         cat_acc = np.mean(np.concatenate(cat_cors[cat]))
         print("Average accuracy {:.3f} - {}".format(cat_acc, cat))
     weighted_acc = np.mean(np.concatenate(all_cors))
@@ -250,14 +272,15 @@ def main(args):
                 "average_acc": weighted_acc,
                 "subcat_acc": {
                     subcat: np.mean(np.concatenate(subcat_cors[subcat]))
-                    for subcat in subcat_cors
+                    for subcat in subcat_cors if subcat_cors[subcat] != []
                 },
                 "cat_acc": {
                     cat: np.mean(np.concatenate(cat_cors[cat]))
-                    for cat in cat_cors
+                    for cat in cat_cors if cat_cors[cat] != []
                 },
             },
             f,
+            indent=4
         )
 
 
@@ -266,7 +289,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--ntrain",
         type=int,
-        default=5
+        default=5,
+        help="# few-shot examples in dev"
     )
     parser.add_argument(
         "--data_dir",
@@ -351,11 +375,17 @@ if __name__ == "__main__":
     parser.add_argument(
         "--eval_valid",
         action="store_true",
-        help="If given, we will use gpu for inference.")
+        help="If given, we will use gpu for inference.")  # not supported yet
 
     args = parser.parse_args()
 
     # model_name_or_path and openai_engine cannot be both None or both not None.
     assert (args.model_name_or_path is None) != (
         args.openai_engine is None), "Either model_name_or_path or openai_engine should be specified."
+
+    # add prefix to model_name_or_path and tokenizer_name_or_path
+    base_path = "/projects/illinois/eng/cs/haopeng/qirundai"
+    args.model_name_or_path = f"{base_path}/out/{args.model_name_or_path}"
+    args.tokenizer_name_or_path = args.model_name_or_path
+
     main(args)

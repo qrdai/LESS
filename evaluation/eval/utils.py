@@ -10,6 +10,10 @@ from transformers import StoppingCriteria
 from open_instruct.finetune import encode_with_prompt_completion_format
 from eval.dispatch_openai_requests import dispatch_openai_chat_requesets, dispatch_openai_prompt_requesets
 
+hf_home = "/projects/illinois/eng/cs/haopeng/qirundai/.cache/huggingface"
+os.environ['HF_HOME'] = hf_home
+model_cache_dir = f"{hf_home}/transformers" # `cache_dir` arg for .from_pretrained()
+
 
 class KeyWordsCriteria(StoppingCriteria):
     def __init__(self, stop_id_sequences):
@@ -30,6 +34,8 @@ class KeyWordsCriteria(StoppingCriteria):
     
 @torch.no_grad()
 def generate_completions(model, tokenizer, prompts, batch_size=1, stop_id_sequences=None, add_special_tokens=True, disable_tqdm=False, **generation_kwargs):
+    # for bbh: max_new_tokens=512, do_sample=False
+    # for tydiqa: max_new_tokens=50
     generations = []
     if not disable_tqdm:
         progress = tqdm.tqdm(total=len(prompts), desc="Generating Completions")
@@ -111,11 +117,11 @@ def get_next_word_predictions(model, tokenizer, prompts, candidate_token_ids=Non
             batch_input_ids = batch_input_ids.cuda()
             attention_mask = attention_mask.cuda()
 
-        batch_logits = model(input_ids=batch_input_ids, attention_mask=attention_mask).logits[:, -1, :]
+        batch_logits = model(input_ids=batch_input_ids, attention_mask=attention_mask).logits[:, -1, :] # take the logit of the final position in a sequence -> what if some models add <eos> there?
         batch_probs = torch.softmax(batch_logits, dim=-1)
         if candidate_token_ids is not None:
-            batch_probs = batch_probs[:, candidate_token_ids]
-        batch_prediction_indices = torch.argmax(batch_probs, dim=-1)
+            batch_probs = batch_probs[:, candidate_token_ids]   # only get the logits of positions corresponding to answer_choice_ids
+        batch_prediction_indices = torch.argmax(batch_probs, dim=-1)    # batch_prediction_indices.shape == [batch_size], and each element in [0,1,2,3]
         if return_token_predictions:
             if candidate_token_ids is not None:
                 candidate_tokens = tokenizer.convert_ids_to_tokens(candidate_token_ids)
@@ -125,7 +131,10 @@ def get_next_word_predictions(model, tokenizer, prompts, candidate_token_ids=Non
             predictions += batch_predictions
         else:
             predictions += batch_prediction_indices.tolist()
-        probs += batch_probs.tolist()
+        probs += batch_probs.tolist()   # batch_probs.shape == [batch_size, 4] -> len(probs) == len(predictions) == len(prompts)
+
+        # print(f"batch_probs:\n{batch_probs}\n")
+        # print(f"batch_prediction_indices:\n{batch_prediction_indices}\n")
 
         if not disable_tqdm:
             progress.update(len(batch_prompts))
@@ -199,14 +208,15 @@ def load_hf_lm_and_tokenizer(
     
     from transformers import AutoModelForCausalLM, AutoTokenizer, OPTForCausalLM, GPTNeoXForCausalLM
     
-    is_peft = "lora" in model_name_or_path 
+    is_peft = "lora" in model_name_or_path  # if use self-finetuned lora models, then `model_name_or_path` just set as path to the checkpoint, where `adapter_config.json` lives
     from peft import PeftConfig, PeftModel
     
     if is_peft:
         peft_config = PeftConfig.from_pretrained(model_name_or_path)
         peft_dir = model_name_or_path
         model_name_or_path = peft_config.base_model_name_or_path
-        
+
+
     if gptq_model:
         from auto_gptq import AutoGPTQForCausalLM   # should not throw error as long as not executed
         model_wrapper = AutoGPTQForCausalLM.from_quantized(
@@ -221,9 +231,18 @@ def load_hf_lm_and_tokenizer(
         )
     else:
         if device_map:
-            model = AutoModelForCausalLM.from_pretrained(model_name_or_path, device_map=device_map, torch_dtype=None)
+            model = AutoModelForCausalLM.from_pretrained(
+                model_name_or_path, 
+                device_map=device_map, 
+                torch_dtype=None, 
+                cache_dir=model_cache_dir   # only needs to be added here as `model_name_or_path` is now `peft_config.base_model_name_or_path`
+            )
         else:
-            model = AutoModelForCausalLM.from_pretrained(model_name_or_path, torch_dtype=torch_dtype)
+            model = AutoModelForCausalLM.from_pretrained(
+                model_name_or_path, 
+                torch_dtype=torch_dtype,
+                cache_dir=model_cache_dir
+            )
             if torch.cuda.is_available():
                 model = model.cuda()
         

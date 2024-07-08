@@ -47,17 +47,18 @@ task_names = [
 
 
 def main(args):
-    random.seed(42)
+    # random.seed(42)
+    random.seed(args.eval_seed)
 
     all_tasks = {}
-    task_files = glob.glob(os.path.join(args.data_dir, "bbh", "*.json"))
+    task_files = glob.glob(os.path.join(args.data_dir, "test", "*.json"))    # os.path.join(args.data_dir, "bbh", "*.json")
     for task_file in tqdm.tqdm(task_files, desc="Loading tasks"):
         with open(task_file, "r") as f:
             task_name = os.path.basename(task_file).split(".")[0]
             all_tasks[task_name] = json.load(f)["examples"]
             if args.max_num_examples_per_task:
-                all_tasks[task_name] = random.sample(
-                    all_tasks[task_name], args.max_num_examples_per_task)
+                all_tasks[task_name] = random.sample(all_tasks[task_name], args.max_num_examples_per_task)
+                # all_tasks[task_name] = all_tasks[task_name][:args.max_num_examples_per_task]    # all_tasks[task_name] == [{"input": "...", "target": "..."}, {"input": "...", "target": "..."}, ...]
 
     all_prompts = {}
     cot_prompt_files = glob.glob(os.path.join(
@@ -65,7 +66,7 @@ def main(args):
     for cot_prompt_file in tqdm.tqdm(cot_prompt_files, desc="Loading prompts"):
         with open(cot_prompt_file, "r") as f:
             task_name = os.path.basename(cot_prompt_file).split(".")[0]
-            task_prompt = "".join(f.readlines()[2:])
+            task_prompt = "".join(f.readlines()[2:])    # skip the first two lines
             if args.no_cot:
                 prompt_fields = task_prompt.split("\n\n")
                 new_prompt_fields = []
@@ -101,7 +102,7 @@ def main(args):
                 max_num_batched_tokens=4096,
             )
         else:
-            print("Loading model and tokenizer with huggingface...")
+            print(f"Loading model and tokenizer with huggingface, from {args.model_name_or_path}")
             model, tokenizer = load_hf_lm_and_tokenizer(
                 model_name_or_path=args.model_name_or_path,
                 tokenizer_name_or_path=args.tokenizer_name_or_path,
@@ -116,12 +117,12 @@ def main(args):
     performance = {}
 
     if args.subtask is not None:
-        tasks = [task_names[args.subtask]]
+        tasks = [task_names[args.subtask]] # args.subtask is int
     else:
         tasks = all_tasks.keys()
 
     for task_name in tqdm.tqdm(tasks, desc="Evaluating"):
-        task_examples = all_tasks[task_name]
+        task_examples = all_tasks[task_name]    # [{"input": "...", "target": "..."}, {"input": "...", "target": "..."}, ...]
         task_prompt = all_prompts[task_name]
         if args.model_name_or_path:
             # prepare prompts
@@ -139,7 +140,7 @@ def main(args):
                         prompt += " A:"
                 else:
                     prompt += "\nA:"
-                prompts.append(prompt)
+                prompts.append(prompt)  # prompts == ["...", "...", ...]
             
             # generate with vllm
             if args.use_vllm:
@@ -165,7 +166,8 @@ def main(args):
                     tokenizer=tokenizer,
                     prompts=prompts,
                     max_new_tokens=512,
-                    # temperature=0,
+                    # temperature=0.0,    # equal to `do_sample=False`, i.e., greedy decoding
+                    # top_p=1.0,
                     do_sample=False,
                     batch_size=args.eval_batch_size if args.eval_batch_size else 1,
                     stop_id_sequences=[[stop_sequence]]
@@ -195,7 +197,7 @@ def main(args):
 
             # extract the first answer after `So the answer is` and before the next period.
             # if there is no such answer, we will just use the raw output.
-            extracted_answer = re.search(r"So the answer is (.*?)\.", output)
+            extracted_answer = re.search(r"So the answer is (.*?)\.", output)   # the same format as bbh/cot-prompts
             if extracted_answer:
                 prediction = extracted_answer.group(1).strip()
             else:
@@ -206,12 +208,14 @@ def main(args):
             example["prediction"] = prediction
             predictions.append(prediction)
 
-        with open(os.path.join(args.save_dir, "predictions", f"{task_name}.jsonl"), "w") as fout:
-            for example in task_examples:
-                fout.write(json.dumps(example) + "\n")
+        # with open(os.path.join(args.save_dir, "predictions", f"{task_name}.jsonl"), "w") as fout:
+        #     for example in task_examples:
+        #         fout.write(json.dumps(example) + "\n")
 
-        assert len(predictions) == len(
-            targets), "number of predictions and targets are not the same."
+        with open(os.path.join(args.save_dir, "predictions", f"{task_name}.json"), "w") as fout:
+            json.dump(task_examples, fout, indent=4)
+
+        assert len(predictions) == len(targets), "number of predictions and targets are not the same."
         performance[task_name] = exact_match.compute(
             predictions=predictions, references=targets, ignore_case=True, ignore_punctuation=True)["exact_match"]
 
@@ -322,9 +326,20 @@ if __name__ == "__main__":
         "--eval_valid",
         action="store_true",
     )
+    parser.add_argument(
+        "--eval_seed",
+        type=int,
+        default=42,
+    )
     args = parser.parse_args()
 
     # model_name_or_path and openai_engine cannot be both None or both not None.
     assert (args.model_name_or_path is None) != (
         args.openai_engine is None), "Either model_name_or_path or openai_engine should be specified."
+
+    # add prefix to model_name_or_path and tokenizer_name_or_path
+    base_path = "/projects/illinois/eng/cs/haopeng/qirundai"
+    args.model_name_or_path = f"{base_path}/out/{args.model_name_or_path}"
+    args.tokenizer_name_or_path = args.model_name_or_path
+
     main(args)
