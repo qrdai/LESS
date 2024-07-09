@@ -3,12 +3,11 @@ source eval.sh
 # main evaluation function
 eval_tydiqa() {
     mdir=$1
-    ckpt=$2
-    evalseed=$3
-    evalbsz=$4
+    evalseed=$2
+    evalbsz=$3
 
     set_save_dir $mdir tydiqa
-    save_dir=${save_dir}_ckpt${ckpt}_evalseed${evalseed}_evalbsz${evalbsz}
+    save_dir=${save_dir}_evalseed${evalseed}_evalbsz${evalbsz}_nochat
     mkdir -p $save_dir
 
     cmd="python -m eval.tydiqa.run_eval \
@@ -21,9 +20,9 @@ eval_tydiqa() {
     --tokenizer $mdir \
     --eval_batch_size $evalbsz \
     --eval_seed $evalseed \
-    --use_chat_format \
-    --convert_to_bf16 \
-    --chat_formatting_function eval.templates.create_prompt_with_tulu_chat_format"
+    --convert_to_bf16"
+    # --use_chat_format \
+    # --chat_formatting_function eval.templates.create_prompt_with_tulu_chat_format"
     eval "$cmd" 2>&1 | tee $save_dir/eval.log
 }
 
@@ -51,12 +50,11 @@ eval_tydiqa() {
 # extract the results
 extract_tydiqa() {
     mdir=$1
-    ckpt=$2
-    evalseed=$3
-    evalbsz=$4
+    evalseed=$2
+    evalbsz=$3
 
     set_save_dir $mdir tydiqa
-    save_dir=${save_dir}_ckpt${ckpt}_evalseed${evalseed}_evalbsz${evalbsz}
+    save_dir=${save_dir}_evalseed${evalseed}_evalbsz${evalbsz}_nochat
 
     result=$(jq .average.f1 $save_dir/metrics.json)
     echo $result

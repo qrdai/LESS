@@ -3,12 +3,11 @@ source eval.sh
 # main evaluation function
 eval_bbh() {
     mdir=$1
-    ckpt=$2
-    evalseed=$3
-    evalbsz=$4
+    evalseed=$2
+    evalbsz=$3
 
     set_save_dir $mdir bbh
-    save_dir=${save_dir}_ckpt${ckpt}_evalseed${evalseed}_evalbsz${evalbsz}
+    save_dir=${save_dir}_evalseed${evalseed}_evalbsz${evalbsz}
     mkdir -p $save_dir
 
     cmd="python -m eval.bbh.run_eval \
@@ -44,12 +43,11 @@ eval_bbh() {
 # extract the results
 extract_bbh() {
     mdir=$1
-    ckpt=$2
-    evalseed=$3
-    evalbsz=$4
+    evalseed=$2
+    evalbsz=$3
 
     set_save_dir $mdir bbh
-    save_dir=${save_dir}_ckpt${ckpt}_evalseed${evalseed}_evalbsz${evalbsz}
+    save_dir=${save_dir}_evalseed${evalseed}_evalbsz${evalbsz}
 
     result=$(jq .average_exact_match $save_dir/metrics.json)
     result=$(echo "$result * 100" | bc)

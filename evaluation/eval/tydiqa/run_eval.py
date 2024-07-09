@@ -101,7 +101,7 @@ def main(args):
                for lang in data_languages])
 
     if args.model_name_or_path:
-        print("Loading model and tokenizer...")
+        print(f"Loading model and tokenizer with huggingface, from {args.model_name_or_path}")
         if args.use_vllm:
             model = vllm.LLM(
                 model=args.model_name_or_path,

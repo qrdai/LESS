@@ -21,4 +21,4 @@ conda activate less                     # Activate your specific Conda environme
 
 
 # User scripting: any number of any Linux command (python/shell, etc.) can be executed here
-./step5.sh
+./step5_mmlu.sh

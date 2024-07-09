@@ -141,7 +141,7 @@ def encode_with_messages_format(example, tokenizer, max_seq_length):
     example_text = concat_messages(messages, tokenizer)
     tokenized_example = tokenizer(
         example_text, return_tensors='pt', max_length=max_seq_length, truncation=True)
-    input_ids = tokenized_example.input_ids
+    input_ids = tokenized_example.input_ids # all the training samples are encoded in tulu_chat_format 
     labels = input_ids.clone()
 
     # mask the non-assistant part for avoiding loss
